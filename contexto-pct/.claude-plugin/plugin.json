@@ -1,0 +1,1 @@
+{ "name": "contexto-pct", "version": "0.3.0", "description": "Mostra quantos % do contexto o chat ocupa, em barra que avermelha perto de 300k, e compacta após 1h parado", "types": "./types/index.d.ts" }
