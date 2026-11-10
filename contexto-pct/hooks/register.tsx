@@ -126,12 +126,19 @@ export const register: Register = on => {
     const c = await read($, ctx)
     const uso5h = await read($, limite5h)
     const faltaMin = await read($, compactaEm)
+    const fundo5h = (u: number) => (u >= 90 ? '#e5484d' : u >= 70 ? '#f5a524' : '#2f8f5b')
     const cauda = (
       <>
-        {faltaMin !== null ? <Text color="yellow"> · compacta em {faltaMin}min</Text> : null}
+        <Box flexGrow={1} />
+        {faltaMin !== null ? (
+          <Text backgroundColor="#f5a524" color="#000000" bold>
+            {' '}compacta em {faltaMin}min{' '}
+          </Text>
+        ) : null}
+        {faltaMin !== null && uso5h !== null ? <Text> </Text> : null}
         {uso5h !== null ? (
-          <Text color={uso5h >= 90 ? 'red' : uso5h >= 70 ? 'yellow' : undefined} dimColor={uso5h < 70}>
-            {' '}· 5h {Math.round(uso5h)}%
+          <Text backgroundColor={fundo5h(uso5h)} color="#ffffff" bold>
+            {' '}5h {Math.round(uso5h)}%{' '}
           </Text>
         ) : null}
       </>
@@ -140,7 +147,7 @@ export const register: Register = on => {
 
     if (c.tokens === null) {
       return (
-        <Box>
+        <Box flexDirection="row" flexGrow={1}>
           <Text dimColor>ctx —/{fmtK(w)}</Text>
           {cauda}
         </Box>
@@ -161,7 +168,7 @@ export const register: Register = on => {
     })
 
     return (
-      <Box>
+      <Box flexDirection="row" flexGrow={1}>
         <Text color={cor(c.tokens)} bold={isCritico}>ctx </Text>
         {barra}
         <Text color={cor(c.tokens)} bold={isCritico}>
