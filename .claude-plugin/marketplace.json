@@ -1,5 +1,5 @@
 {
   "name": "kj-mods",
   "owner": { "name": "Kelvin-Jesus" },
-  "plugins": [{ "name": "contexto-pct", "source": "./contexto-pct" }]
+  "plugins": [{ "name": "cadence", "source": "./cadence" }]
 }

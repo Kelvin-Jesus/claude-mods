@@ -1,0 +1,195 @@
+{
+  "name": "cadence",
+  "version": "1.0.0",
+  "description": "A band that keeps the chat in rhythm: auto effort per prompt (Haiku, Jev, or an offline decision model via Ollaya), context in tokens, prompt cache timer, rate limits, Haiku compaction with a safety net, and one-click handoff",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "language": {
+      "type": "string",
+      "title": "Language",
+      "description": "What the band, toasts and /cadence output are written in. Commands and option values stay in English.",
+      "default": "en",
+      "options": [
+        "en",
+        "pt-BR"
+      ]
+    },
+    "contextBudget": {
+      "type": "string",
+      "title": "Context budget (tokens)",
+      "description": "The bar counts against this total, not the model window. Use the same value in CLAUDE_CODE_AUTO_COMPACT_WINDOW.",
+      "default": "350000",
+      "options": [
+        "200000",
+        "300000",
+        "350000",
+        "500000",
+        "750000",
+        "1000000"
+      ]
+    },
+    "autoEffort": {
+      "type": "string",
+      "title": "Auto effort",
+      "description": "on: a fast judge picks the effort for each prompt. off: the app's effort applies.",
+      "default": "on",
+      "options": [
+        "on",
+        "off"
+      ]
+    },
+    "judge": {
+      "type": "string",
+      "title": "Effort judge",
+      "description": "auto: the local judge if localUrl is set, then Jev if a key is found, with Haiku always as fallback. haiku: only Haiku, through the session login. jev: TypeSafe's Jev (key). local: a decision model on your machine, offline (Ollaya).",
+      "default": "auto",
+      "options": [
+        "auto",
+        "haiku",
+        "jev",
+        "local"
+      ]
+    },
+    "localUrl": {
+      "type": "string",
+      "title": "Local judge URL (optional)",
+      "description": "Ollaya: http://127.0.0.1:11435 (the default when empty). Any server with Jev's /v1/systemone works (Ollama 0.40+, laya-serve). A URL ending in /chat/completions sends a chat model through the OpenAI API instead.",
+      "default": ""
+    },
+    "localModel": {
+      "type": "string",
+      "title": "Local judge model (optional)",
+      "description": "The model the local server knows. Empty: laya:multilingual (CPU, reads Portuguese). With a NVIDIA GPU, winnow:e4b is Ollaya's recommended pick.",
+      "default": ""
+    },
+    "typesafeKey": {
+      "type": "string",
+      "title": "TypeSafe key (optional)",
+      "description": "For the Jev judge. Without it, cadence looks for TYPESAFE_API_KEY and, with judge jev, ~/.config/jev/.env.",
+      "default": "",
+      "sensitive": true
+    },
+    "minEffort": {
+      "type": "string",
+      "title": "Minimum effort",
+      "description": "Auto never picks below this.",
+      "default": "low",
+      "options": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ]
+    },
+    "maxEffort": {
+      "type": "string",
+      "title": "Maximum effort",
+      "description": "Auto never picks above this.",
+      "default": "max",
+      "options": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ]
+    },
+    "bias": {
+      "type": "string",
+      "title": "Bias",
+      "description": "-2 cheaper to 2 more thorough. Only moves the calls where the judge was unsure.",
+      "default": "0",
+      "options": [
+        "-2",
+        "-1",
+        "0",
+        "1",
+        "2"
+      ]
+    },
+    "compactWith": {
+      "type": "string",
+      "title": "Who writes the compaction summary",
+      "description": "haiku: Haiku 5.5, much cheaper, with cadence's safety net. session: the chat model, as Claude Code does.",
+      "default": "haiku",
+      "options": [
+        "haiku",
+        "session"
+      ]
+    },
+    "idleMinutes": {
+      "type": "string",
+      "title": "Compact after idle (min)",
+      "description": "With no message and no agent work for this long, the chat compacts on its own. 0 turns it off.",
+      "default": "60",
+      "options": [
+        "0",
+        "15",
+        "30",
+        "45",
+        "60",
+        "90",
+        "120"
+      ]
+    },
+    "idleMinTokens": {
+      "type": "string",
+      "title": "Minimum to compact when idle (tokens)",
+      "description": "Below this, idle compaction does not run.",
+      "default": "30000",
+      "options": [
+        "15000",
+        "30000",
+        "60000",
+        "100000"
+      ]
+    },
+    "heavyPct": {
+      "type": "string",
+      "title": "Heavy context warning (%)",
+      "description": "Shows the warning with Compact and New chat past this share of the budget.",
+      "default": "85",
+      "options": [
+        "60",
+        "70",
+        "75",
+        "80",
+        "85",
+        "90"
+      ]
+    },
+    "afterHandoff": {
+      "type": "string",
+      "title": "After handoff",
+      "description": "continue: clears and keeps going. wait: clears, says where things stand and waits. copy: keeps the chat and copies the handoff.",
+      "default": "continue",
+      "options": [
+        "continue",
+        "wait",
+        "copy"
+      ]
+    },
+    "handoffAdvice": {
+      "type": "string",
+      "title": "Suggest handoff",
+      "description": "on: from 30% of the budget, Haiku says when a new chat would do better.",
+      "default": "on",
+      "options": [
+        "on",
+        "off"
+      ]
+    },
+    "handoffSkill": {
+      "type": "string",
+      "title": "Full handoff skill (optional)",
+      "description": "A skill or command that writes the full handoff. Empty: cadence checks git and writes HANDOFF.md.",
+      "default": ""
+    }
+  },
+  "author": {
+    "name": "Kelvin Jesus",
+    "url": "https://github.com/Kelvin-Jesus"
+  },
+  "license": "MIT"
+}
