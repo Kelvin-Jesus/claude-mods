@@ -1039,45 +1039,44 @@ export const register: Register = (on, opcoes) => {
       const falta = cinco ? contagem(cinco.resetsAt, agora) : ''
       // Two aligned rows: labels, bars and percents line up in columns; the right edge holds the secondary facts.
       const pct4 = (v: number) => `${Math.round(v)}%`.padStart(4)
+      const COL = 11 // width of the "tokens" / "reset" column, so the second group lines up on both rows
+      const gap = '   '
+      const resto = (t: string) => <Text dimColor>{t.padEnd(COL)}</Text>
       const linhaCtx = (
-        <Box flexDirection="row" width="100%" justifyContent="space-between">
-          <Box flexDirection="row" flexShrink={0}>
-            <Text dimColor>ctx </Text>
-            {fina(pct ?? 0, n, nivelCtx)}
-            <Text color={nivelCtx === 'ok' ? undefined : TEMA[nivelCtx]} weight={pesado ? 'semibold' : undefined}>
-              {pct === null ? '   —' : pct4(pct)}
-            </Text>
-            <Text dimColor>{tokens === null ? ` ${fmtK(janela)}` : ` ${fmtK(tokens)}${cabem.orcamento ? `/${fmtK(janela)}` : ''}`}</Text>
-          </Box>
-          <Box flexDirection="row" flexShrink={1}>
-            {esforco}
-            {cache ? sep : null}
-            {cache}
-          </Box>
+        <Box flexDirection="row" width="100%">
+          <Text dimColor>ctx </Text>
+          {fina(pct ?? 0, n, nivelCtx)}
+          <Text color={nivelCtx === 'ok' ? undefined : TEMA[nivelCtx]} weight={pesado ? 'semibold' : undefined}>
+            {pct === null ? '   —' : pct4(pct)}
+          </Text>
+          {resto(tokens === null ? ` ${fmtK(janela)}` : ` ${fmtK(tokens)}${cabem.orcamento ? `/${fmtK(janela)}` : ''}`)}
+          <Text>{gap}</Text>
+          {esforco}
+          {cache ? sep : null}
+          {cache}
         </Box>
       )
       const linhaLimites =
         cinco || sete ? (
-          <Box flexDirection="row" width="100%" justifyContent="space-between">
-            <Box flexDirection="row" flexShrink={0}>
-              {cinco ? [
-                <Text key="l5" dimColor>5h  </Text>,
-                <Text key="b5">{fina(cinco.pct, n, nivelLimite(cinco.pct))}</Text>,
-                <Text key="p5" color={TEMA[nivelLimite(cinco.pct)]}>{pct4(cinco.pct)}</Text>,
-                falta ? <Text key="r5" dimColor>{` ${ascii ? '' : '↻ '}${falta}`}</Text> : null,
-              ] : null}
-            </Box>
-            <Box flexDirection="row" flexShrink={1}>
-              {compactaTxt ? <Text color={TEMA.info}>{compactaTxt}</Text> : null}
-              {compactaTxt && sete ? sep : null}
-              {sete ? [
-                <Text key="l7" dimColor>7d </Text>,
-                <Text key="p7" color={TEMA[nivelLimite(sete.pct)]}>{`${Math.round(sete.pct)}%`}</Text>,
-              ] : null}
-            </Box>
+          <Box flexDirection="row" width="100%">
+            {cinco ? [
+              <Text key="l5" dimColor>5h  </Text>,
+              <Text key="b5">{fina(cinco.pct, n, nivelLimite(cinco.pct))}</Text>,
+              <Text key="p5" color={TEMA[nivelLimite(cinco.pct)]}>{pct4(cinco.pct)}</Text>,
+              <Text key="r5" dimColor>{(falta ? ` ${ascii ? '' : '↻ '}${falta}` : '').padEnd(COL)}</Text>,
+            ] : [<Text key="v5">{' '.repeat(4 + n + 4 + COL)}</Text>]}
+            <Text>{gap}</Text>
+            {sete ? [
+              <Text key="l7" dimColor>7d </Text>,
+              <Text key="p7" color={TEMA[nivelLimite(sete.pct)]}>{`${Math.round(sete.pct)}%`}</Text>,
+            ] : null}
+            {compactaTxt ? [
+              sete ? <Text key="sc" dimColor>{ascii ? ' - ' : ' · '}</Text> : null,
+              <Text key="cp" color={TEMA.info}>{compactaTxt}</Text>,
+            ] : null}
           </Box>
         ) : compactaTxt ? (
-          <Box flexDirection="row" width="100%" justifyContent="flex-end">
+          <Box flexDirection="row" width="100%">
             <Text color={TEMA.info}>{compactaTxt}</Text>
           </Box>
         ) : null
