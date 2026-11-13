@@ -105,6 +105,7 @@ const EN = {
     '/cadence compact [what the summary should keep]',
     '/cadence saver                effort at most medium until the limit resets',
     '/cadence stats                what this session measured',
+    '/cadence savings              tokens and dollars cadence saved this session',
     '/cadence bench [pt] [haiku|jev|local]   score a judge on the labeled cases',
   ],
   status: {
@@ -139,6 +140,15 @@ const EN = {
     economiaCompactar: (u: string, s: string) => `  Haiku cost ${u}; the chat model would cost ~${s} (estimate, warm cache).`,
     handoffs: (n: number) => `Handoffs: ${n}.`,
     subagentes: (n: number, quais: string) => `Subagents: ${n} routed (${quais}).`,
+  },
+
+  // /cadence savings
+  economia: {
+    titulo: 'Saved by cadence this session',
+    tokens: (livres: string, antes: string, depois: string, pct: number) => `Tokens: ${livres} freed by compaction (${antes} → ${depois}, ${pct}% smaller).`,
+    dolares: (haiku: string, chat: string, saldo: string) => `Dollars: ${saldo} saved on compaction (Haiku ${haiku} vs ~${chat} for the chat model, estimate, warm cache).`,
+    esforco: (n: number, de: number) => `Effort: ${n} of ${de} prompts ran below high effort.`,
+    nada: 'Nothing saved yet. Savings appear after the first Haiku compaction (`/cadence compact`).',
   },
 
   // /cadence bench
@@ -270,6 +280,7 @@ const PT: Textos = {
     '/cadence compact [o que o resumo deve manter]',
     '/cadence saver                esforço até médio até o limite renovar',
     '/cadence stats                o que foi medido nesta sessão',
+    '/cadence savings              tokens e dólares que o cadence economizou nesta sessão',
     '/cadence bench [pt] [haiku|jev|local]   mede um juiz nos casos rotulados',
   ],
   status: {
@@ -289,6 +300,14 @@ const PT: Textos = {
     falhou: (m: string) => `falhou (${m})`,
     falhouAviso: 'falhou (o aviso diz por quê)',
     foraDoFormato: 'fora do formato',
+  },
+
+  economia: {
+    titulo: 'Economizado pelo cadence nesta sessão',
+    tokens: (livres: string, antes: string, depois: string, pct: number) => `Tokens: ${livres} liberados pela compactação (${antes} → ${depois}, ${pct}% menor).`,
+    dolares: (haiku: string, chat: string, saldo: string) => `Dólares: ${saldo} economizados na compactação (Haiku ${haiku} contra ~${chat} do modelo do chat, estimativa, cache quente).`,
+    esforco: (n: number, de: number) => `Esforço: ${n} de ${de} prompts rodaram abaixo de high.`,
+    nada: 'Ainda nada economizado. Aparece depois da primeira compactação pelo Haiku (`/cadence compact`).',
   },
 
   gasto: {

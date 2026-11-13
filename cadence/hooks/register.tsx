@@ -49,6 +49,7 @@ import {
   semEsforco,
   cacheSeguro,
   textoGasto,
+  textoEconomia,
   transcricao,
   TTL,
   ttlDe,
@@ -615,7 +616,7 @@ export const register: Register = (on, opcoes) => {
   on('session.start', async ($, e, next) => {
     const r = await next(e)
     $.ui.status(undefined) // o contexto-pct antigo usava a status line
-    await $.command.register({ name: P, description: 'cadence: status, auto, judge, handoff, compact, saver, stats, bench, help' }).catch(() => undefined)
+    await $.command.register({ name: P, description: 'cadence: status, auto, judge, handoff, compact, saver, stats, savings, bench, help' }).catch(() => undefined)
     await update($, auto, () => config.auto)
     ascii = (await $.env.get('TERM').catch(() => undefined)) === 'dumb'
     const memo = await read($, cacheMemo)
@@ -847,6 +848,7 @@ export const register: Register = (on, opcoes) => {
       const { cost } = await $.session.usage()
       return { text: textoGasto(comoGasto(await read($, gasto)), cost?.usd) }
     }
+    if (arg === 'savings') return { text: textoEconomia(comoGasto(await read($, gasto))) }
     if (arg === 'judge') return { text: await testarJuizes($) }
     if (arg === 'bench') {
       const dados = JSON.parse(await $.fs.read(`${$.plugin.root}/bench/casos-juiz.json`)) as { cases: CasoBench[] }

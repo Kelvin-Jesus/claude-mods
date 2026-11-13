@@ -3,6 +3,8 @@ import { expect, test } from 'claude-code/testing'
 import {
   celulas,
   comManifesto,
+  comoGasto,
+  textoEconomia,
   economizado,
   ehSeguimento,
   esforcoDoSubagente,
@@ -170,4 +172,12 @@ test('subagente: o juiz lê o tipo, a descrição e o prompt, com o aviso antes'
   expect(m).toContain('Explore')
   expect(m).toContain('achar o login')
   expect(m.length <= 2000).toBe(true)
+})
+
+test('textoEconomia: nada antes da primeira compactação, depois tokens e dólares', () => {
+  expect(textoEconomia(comoGasto({}))).toContain('Nothing saved')
+  const g = comoGasto({ prompts: 4, porEsforco: { low: { prompts: 3, usd: 0 } }, compactacoes: { haiku: 1, antes: 200_000, depois: 20_000, usd: 0.05, usdSessaoEstimado: 0.5 } })
+  const t = textoEconomia(g)
+  expect(t).toContain('90% smaller')
+  expect(t).toContain('3 of 4 prompts')
 })
