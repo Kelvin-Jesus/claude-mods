@@ -597,9 +597,9 @@ export function textoEconomia(g: Gasto): string {
   const c = g.compactacoes
   const livres = c.antes - c.depois
   const abaixo = (g.porEsforco.low?.prompts ?? 0) + (g.porEsforco.medium?.prompts ?? 0)
-  if (!c.haiku && !abaixo) return T.economia.nada
+  if (!c.haiku && !c.sessao && !abaixo) return T.economia.nada
   const linhas = [T.economia.titulo]
-  if (c.haiku && livres > 0)
+  if ((c.haiku || c.sessao) && livres > 0)
     linhas.push(T.economia.tokens(fmtK(livres), fmtK(c.antes), fmtK(c.depois), Math.round((livres / c.antes) * 100)))
   if (c.haiku && c.usdSessaoEstimado > c.usd)
     linhas.push(T.economia.dolares(fmtUsd(c.usd), fmtUsd(c.usdSessaoEstimado), fmtUsd(c.usdSessaoEstimado - c.usd)))

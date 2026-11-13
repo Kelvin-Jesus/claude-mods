@@ -783,6 +783,7 @@ export const register: Register = (on, opcoes) => {
           compactacoes: { ...g.compactacoes, sessao: g.compactacoes.sessao + 1, antes: g.compactacoes.antes + (feito.tokensBefore ?? antes), depois: g.compactacoes.depois + (feito.tokensAfter ?? 0) },
         }))
         await cacheEsfriado($)
+        if (feito.tokensAfter !== undefined) await update($, ctx, c => ({ ...c, tokens: feito.tokensAfter ?? null }))
       }
       return r
     }
@@ -813,6 +814,7 @@ export const register: Register = (on, opcoes) => {
       },
     }))
     await cacheEsfriado($)
+    await update($, ctx, c => ({ ...c, tokens: depois }))
     return { messages: [{ role: 'user' as const, text: texto, toolUses: [] }], tokensBefore: antes, tokensAfter: depois }
   })
 
