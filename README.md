@@ -3,10 +3,11 @@
 **Keep every Claude Code chat in rhythm.** Cadence picks the right effort for each prompt, shows how much context you have spent, and tells you when to compact or start fresh, before it costs you.
 
 ```
-ctx ▄▄▄▄▄▄▄▄▄▄ 45% 158k/350k · ◑ high · cache 42m   5h ▄▄▄▄▄▄▄▄ 8% ↻ 2h26m   7d 54%
+ctx ▂▂▂▂▂▂▂▂▂▂  45% 158k/350k                     ◑ high · cache 42m
+5h  ▂▂▂▂▂▂▂▂▂▂   8% ↻ 2h26m                          compacts in 12 min · 7d 54%
 ```
 
-The band is half-block lines and plain text: no backgrounds, no brackets. Bars take their tone from the level (green, amber, red), the percent matches its bar, and everything else is muted. A nonzero value always shows at least one cell. `TERM=dumb` falls back to ASCII.
+The band is thin lines and plain text: no backgrounds, no brackets. Bars take their tone from the level (green, amber, red), the percent matches its bar, and everything else is muted. A nonzero value always shows at least one cell. `TERM=dumb` falls back to ASCII.
 
 In the desktop app the same band becomes a context ring, a cache arc and thin rate-limit meters, all with alt text for screen readers.
 

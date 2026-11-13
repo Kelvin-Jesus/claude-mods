@@ -59,8 +59,8 @@ export function cabe(colunas: number) {
 /** `[####------]` para terminal sem Unicode confiável (TERM=dumb). */
 export const barraAscii = (cheias: number, total: number) => `[${'#'.repeat(cheias)}${'-'.repeat(Math.max(0, total - cheias))}]`
 
-/** The bar glyph: a lower half block, a solid line half a cell tall that every terminal font draws without gaps. */
-export const TRACO_BARRA = '▄'
+/** The bar glyph: a lower quarter block, a solid line a quarter of a cell tall that every terminal font draws without gaps. */
+export const TRACO_BARRA = '▂'
 
 /** Thin bar (TRACO_BARRA): filled cells carry the tone, the rest is a dim track. A nonzero value always shows one cell, zero shows none. */
 export function barraFina(pct: number, largura: number): { cheias: number; vazias: number } {
