@@ -59,9 +59,10 @@ export function cabe(colunas: number) {
 /** `[####------]` para terminal sem Unicode confiável (TERM=dumb). */
 export const barraAscii = (cheias: number, total: number) => `[${'#'.repeat(cheias)}${'-'.repeat(Math.max(0, total - cheias))}]`
 
-/** Rounded ends, like a CSS border-radius: Powerline half-circles around a row of background-colored cells. Needs a Powerline or Nerd Font. */
-export const CAPA_ESQ = '\uE0B6'
-export const CAPA_DIR = '\uE0B4'
+/** Rounded ends, like a CSS border-radius: half-circle glyphs around a row of rectangles, all centered on the line. */
+export const CAPA_ESQ = '\u25D6'
+export const CAPA_DIR = '\u25D7'
+export const CORPO = '\u25AC'
 /** The unfilled part of the bar, decorative so it needs no contrast ratio. */
 export const TRILHO = '#3f3f46'
 

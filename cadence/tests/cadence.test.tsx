@@ -180,8 +180,8 @@ test('desktop: anel de contexto e medidor de limite com texto alternativo; termi
 
   const term = await $.ui.mount({ ...BANDA, surface: 'terminal' })
   expect((await term.find({ type: 'Text', text: ' 76%' }))?.props.color).toBe('warning')
-  expect(await term.find({ type: 'Text', props: { backgroundColor: TRACO.ok } })).toBeTruthy()
-  expect(await term.find({ type: 'Text', props: { backgroundColor: TRILHO } })).toBeTruthy()
+  expect(await term.find({ type: 'Text', props: { color: TRACO.ok } })).toBeTruthy()
+  expect(await term.find({ type: 'Text', props: { color: TRILHO } })).toBeTruthy()
   await term.unmount()
 })
 
