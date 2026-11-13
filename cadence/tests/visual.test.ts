@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { barraAscii, barraGradiente, cabe, corGradiente, GRADIENTE, nivelCache, nivelPct, PILULA, svgAnel, svgCache, svgMedidor, TRACO } from '../hooks/visual'
+import { barraAscii, barraFina, cabe, nivelCache, nivelPct, PILULA, svgAnel, svgCache, svgMedidor, TRACO } from '../hooks/visual'
 
 const lum = (hex: string) => {
   const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(c => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
@@ -52,19 +52,10 @@ test('o que cabe por largura e a barra ASCII', () => {
   expect(barraAscii(4, 10)).toBe('[####------]')
 })
 
-test('gradiente: pontas nos extremos e todos os tons ≥ 3:1 nos dois fundos', () => {
-  expect(corGradiente(0, 10)).toBe(GRADIENTE[0])
-  expect(corGradiente(9, 10)).toBe(GRADIENTE[2])
-  const lum = (h: string) => {
-    const [r, g, b] = [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16) / 255).map(c => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
-    return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
-  }
-  const razao = (a: string, b: string) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05)
-  for (let i = 0; i < 10; i++) for (const fundo of ['#1f1e1d', '#faf9f5']) expect(razao(corGradiente(i, 10), fundo)).toBeGreaterThanOrEqual(3)
-})
-
-test('barra em gradiente: células cheias, borda em oitavos e o resto', () => {
-  expect(barraGradiente(0.4, 10)).toEqual({ cheias: 4, borda: '', resto: 6 })
-  expect(barraGradiente(0.98, 10)).toEqual({ cheias: 9, borda: '▊', resto: 0 })
-  expect(barraGradiente(1, 10)).toEqual({ cheias: 10, borda: '', resto: 0 })
+test('barra fina: arredonda para baixo, mas mostra uma célula se houver algum valor', () => {
+  expect(barraFina(0, 8)).toEqual({ cheias: 0, vazias: 8 })
+  expect(barraFina(8, 8)).toEqual({ cheias: 1, vazias: 7 })
+  expect(barraFina(45, 10)).toEqual({ cheias: 4, vazias: 6 })
+  expect(barraFina(91, 8)).toEqual({ cheias: 7, vazias: 1 })
+  expect(barraFina(130, 8)).toEqual({ cheias: 8, vazias: 0 })
 })

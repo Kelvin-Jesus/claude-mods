@@ -59,28 +59,11 @@ export function cabe(colunas: number) {
 /** `[####------]` para terminal sem Unicode confiável (TERM=dumb). */
 export const barraAscii = (cheias: number, total: number) => `[${'#'.repeat(cheias)}${'-'.repeat(Math.max(0, total - cheias))}]`
 
-/** Blue → violet → magenta. Every stop passes 3:1 on both app backgrounds. */
-export const GRADIENTE = ['#5b5bd6', '#8b5cf6', '#c44fd8'] as const
-
-/** The color of cell `i` of `n`, a fixed position on the gradient so the fill reveals it as it grows. */
-export function corGradiente(i: number, n: number): string {
-  const t = n <= 1 ? 0 : i / (n - 1)
-  const seg = Math.min(GRADIENTE.length - 2, Math.floor(t * (GRADIENTE.length - 1)))
-  const u = t * (GRADIENTE.length - 1) - seg
-  const a = GRADIENTE[seg]!
-  const b = GRADIENTE[seg + 1]!
-  const canal = (k: number) => Math.round(parseInt(a.slice(k, k + 2), 16) * (1 - u) + parseInt(b.slice(k, k + 2), 16) * u)
-  return `#${[1, 3, 5].map(k => canal(k).toString(16).padStart(2, '0')).join('')}`
-}
-
-const OITAVOS = ' ▏▎▍▌▋▊▉█'
-
-/** Gradient bar parts: whole cells, one eighth-block cell for the fractional edge, and the dithered track. */
-export function barraGradiente(frac: number, n: number): { cheias: number; borda: string; resto: number } {
-  const f = Math.max(0, Math.min(1, frac)) * n
-  const cheias = Math.floor(f + 1e-9)
-  const oitavos = Math.round((f - cheias) * 8)
-  return { cheias: cheias + (oitavos === 8 ? 1 : 0), borda: oitavos === 8 || cheias >= n ? '' : OITAVOS[oitavos]!.trim(), resto: Math.max(0, n - cheias - (oitavos === 8 ? 1 : 0) - (oitavos > 0 && oitavos < 8 ? 1 : 0)) }
+/** Thin bar (━): filled cells carry the tone, the rest is a dim track. A nonzero value always shows one cell, zero shows none. */
+export function barraFina(pct: number, largura: number): { cheias: number; vazias: number } {
+  const p = Math.max(0, pct)
+  const cheias = Math.min(largura, Math.max(p > 0 ? 1 : 0, Math.floor((p * largura) / 100)))
+  return { cheias, vazias: largura - cheias }
 }
 
 const num = (n: number) => Number(n.toFixed(2))

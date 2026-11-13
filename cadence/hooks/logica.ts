@@ -546,6 +546,14 @@ export function cor(tokens: number, verdeAte: number, vermelhoEm: number): strin
 /** Quantos quadradinhos de 1 célula a barra leva: 10 numa tela larga, 8 em 80 colunas, 6 abaixo disso. */
 export const celulas = (colunas: number) => (colunas >= 110 ? 10 : colunas >= 70 ? 8 : 6)
 
+/** Time left until a reset as "2h26m" or "38m"; empty when missing or already past. */
+export function contagem(iso: string | null | undefined, agora: number): string {
+  if (!iso) return ''
+  const falta = Math.floor((new Date(iso).getTime() - agora) / 60_000)
+  if (!Number.isFinite(falta) || falta <= 0) return ''
+  return falta >= 60 ? `${Math.floor(falta / 60)}h${String(falta % 60).padStart(2, '0')}m` : `${falta}m`
+}
+
 /** "14:20" hoje, "seg 14:20" mais longe. */
 export function rotuloReset(iso: string | null | undefined, agora: number): string {
   if (!iso) return ''

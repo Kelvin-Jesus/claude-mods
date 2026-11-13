@@ -8,6 +8,7 @@ import {
   comAnexos,
   comManifesto,
   comoGasto,
+  contagem,
   COMPACTAR_SISTEMA,
   conselhoSistema,
   contextoDe,
@@ -81,7 +82,7 @@ import {
   type Veredito,
 } from './juizes'
 import { T, usarLingua } from './textos'
-import { barraAscii, barraGradiente, cabe, corGradiente, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
+import { barraAscii, barraFina, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, TRACO, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
 
 const P = 'cadence' as const
 const ctx = atom({ plugin: 'cadence', key: 'ctx' } as const, { tokens: null, janela: 350_000 } as Ctx)
@@ -1021,42 +1022,57 @@ export const register: Register = (on, opcoes) => {
         </Box>
       )
     } else {
+      // Thin bars, no backgrounds: ctx, 5h with its countdown and 7d, three spaces apart.
       const n = celulas(cols)
-      const cheias = tokens === null ? 0 : Math.min(n, Math.ceil((tokens / janela) * n - 1e-9))
-      const g = barraGradiente(tokens === null ? 0 : tokens / janela, n)
-      const barra = ascii ? (
-        <Text color={TEMA[nivelCtx]}>{barraAscii(cheias, n)}</Text>
-      ) : (
-        <Text>
-          {Array.from({ length: g.cheias }, (_, i) => (
-            <Text key={i} color={corGradiente(i, n)}>█</Text>
-          ))}
-          {g.borda ? <Text color={corGradiente(g.cheias, n)}>{g.borda}</Text> : null}
-          <Text dimColor>{'░'.repeat(g.resto)}</Text>
-        </Text>
-      )
-      const pilula = (key: string, nivel: Exclude<Nivel, 'neutro'>, texto: string) => (
-        <Text key={key} backgroundColor={PILULA[nivel].fundo} color={PILULA[nivel].texto} weight="semibold">
-          {` ${texto} `}
-        </Text>
-      )
+      const fina = (pctBarra: number, largura: number, nivel: Nivel) => {
+        if (ascii) return <Text color={TEMA[nivel]}>{barraAscii(Math.round((pctBarra * largura) / 100), largura)}</Text>
+        const { cheias, vazias } = barraFina(pctBarra, largura)
+        return (
+          <Text>
+            <Text color={TRACO[nivel]}>{'━'.repeat(cheias)}</Text>
+            <Text color={TRACO.neutro} dimColor>{'━'.repeat(vazias)}</Text>
+          </Text>
+        )
+      }
+      const gap = <Text>{'   '}</Text>
+      const cinco = ls.find(l => l.kind === 'five_hour')
+      const sete = ls.find(l => l.kind === 'seven_day')
+      const falta = cinco ? contagem(cinco.resetsAt, agora) : ''
       linha1 = (
         <Box flexDirection="row" width="100%" justifyContent="space-between">
           <Box flexDirection="row" flexShrink={1}>
             <Text dimColor>ctx </Text>
-            {barra}
+            {fina(pct ?? 0, n, nivelCtx)}
             <Text color={nivelCtx === 'ok' ? undefined : TEMA[nivelCtx]} weight={pesado ? 'semibold' : undefined}>
-              {tokens === null ? ` —/${fmtK(janela)}` : ` ${Math.round(pct!)}% ${fmtK(tokens)}${cabem.orcamento ? `/${fmtK(janela)}` : ''}`}
+              {tokens === null ? ` —/${fmtK(janela)}` : ` ${Math.round(pct!)}%`}
             </Text>
+            <Text dimColor>{tokens === null ? '' : ` ${fmtK(tokens)}${cabem.orcamento ? `/${fmtK(janela)}` : ''}`}</Text>
             {sep}
             {esforco}
             {cache ? sep : null}
             {cache}
+            {cinco ? (
+              <>
+                {gap}
+                <Text dimColor>5h </Text>
+                {fina(cinco.pct, Math.max(4, n - 2), nivelLimite(cinco.pct))}
+                <Text color={TEMA[nivelLimite(cinco.pct)]}>{` ${Math.round(cinco.pct)}%`}</Text>
+                {falta && cols >= 80 ? <Text dimColor>{` ${ascii ? '' : '↻ '}${falta}`}</Text> : null}
+              </>
+            ) : null}
+            {sete && cabem.orcamento ? (
+              <>
+                {gap}
+                <Text dimColor>7d </Text>
+                <Text color={TEMA[nivelLimite(sete.pct)]}>{`${Math.round(sete.pct)}%`}</Text>
+              </>
+            ) : null}
           </Box>
-          <Box flexDirection="row" flexShrink={0} gap={1}>
-            {compactaTxt ? pilula('compacta', 'info', compactaTxt) : null}
-            {vistos.map(l => pilula(l.kind, nivelLimite(l.pct), `${nomeLimite(l.kind)} ${Math.round(l.pct)}%`))}
-          </Box>
+          {compactaTxt ? (
+            <Box flexShrink={0}>
+              <Text color={TEMA.info}>{compactaTxt}</Text>
+            </Box>
+          ) : null}
         </Box>
       )
     }

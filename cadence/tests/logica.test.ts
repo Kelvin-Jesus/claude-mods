@@ -3,6 +3,7 @@ import { expect, test } from 'claude-code/testing'
 import {
   celulas,
   comManifesto,
+  contagem,
   comoGasto,
   textoEconomia,
   economizado,
@@ -180,4 +181,13 @@ test('textoEconomia: nada antes da primeira compactação, depois tokens e dóla
   const t = textoEconomia(g)
   expect(t).toContain('90% smaller')
   expect(t).toContain('3 of 4 prompts')
+})
+
+test('contagem: 2h26m, 38m, e vazio quando já passou ou falta', () => {
+  const agora = Date.UTC(2026, 10, 13, 12, 0, 0)
+  expect(contagem(new Date(agora + (2 * 60 + 26) * 60_000 + 30_000).toISOString(), agora)).toBe('2h26m')
+  expect(contagem(new Date(agora + 38 * 60_000 + 30_000).toISOString(), agora)).toBe('38m')
+  expect(contagem(new Date(agora + 125 * 60_000).toISOString(), agora)).toBe('2h05m')
+  expect(contagem(new Date(agora - 1000).toISOString(), agora)).toBe('')
+  expect(contagem(null, agora)).toBe('')
 })

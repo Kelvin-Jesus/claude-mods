@@ -1,5 +1,7 @@
 import { expect, mock, test } from 'claude-code/testing'
 
+import { TRACO } from '../hooks/visual'
+
 const CONVERSA = [
   { role: 'user' as const, text: 'corrige o login', toolUses: [] },
   {
@@ -114,8 +116,9 @@ test('o juiz escolhe o esforço do prompt e a barra mostra', async ($, on) => {
 
   const ui = await $.ui.mount({ ...BANDA, surface: 'terminal' })
   expect((await ui.find({ type: 'Text', text: /high/ })) !== undefined).toBe(true)
-  expect((await ui.find({ type: 'Text', text: /34% 120k\/350k/ }))?.text).toContain('120k/350k')
-  expect((await ui.find({ type: 'Text', text: /5h 62%/ })) !== undefined).toBe(true)
+  expect((await ui.find({ type: 'Text', text: ' 34%' }))?.text).toBe(' 34%')
+  expect((await ui.find({ type: 'Text', text: / 120k\/350k/ }))?.text).toContain('120k/350k')
+  expect((await ui.find({ type: 'Text', text: ' 62%' })) !== undefined).toBe(true)
   await ui.unmount()
 })
 
@@ -176,11 +179,9 @@ test('desktop: anel de contexto e medidor de limite com texto alternativo; termi
   await desk.unmount()
 
   const term = await $.ui.mount({ ...BANDA, surface: 'terminal' })
-  const pilula = await term.find({ type: 'Text', text: / 5h 76% / })
-  expect(pilula?.props.backgroundColor).toBe('#f5a524')
-  expect(pilula?.props.color).toBe('#1f1e1d')
-  expect(await term.find({ type: 'Text', props: { color: '#5b5bd6' } })).toBeTruthy()
-  expect((await term.find({ type: 'Text', text: /^░+$/ }))?.text).toBe('░░░░░░')
+  expect((await term.find({ type: 'Text', text: ' 76%' }))?.props.color).toBe('warning')
+  expect((await term.find({ type: 'Text', text: /^━{4}$/ }))?.props.color).toBe(TRACO.ok)
+  expect((await term.find({ type: 'Text', text: /^━{6}$/ }))?.text).toBe('━━━━━━')
   await term.unmount()
 })
 
