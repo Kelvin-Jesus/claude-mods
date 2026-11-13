@@ -82,7 +82,7 @@ import {
   type Veredito,
 } from './juizes'
 import { T, usarLingua } from './textos'
-import { barraAscii, barraFina, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, TRACO, TRACO_BARRA, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
+import { barraAscii, barraFina, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, TRACO, TRACO_BARRA, CABECA, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
 
 const P = 'cadence' as const
 const ctx = atom({ plugin: 'cadence', key: 'ctx' } as const, { tokens: null, janela: 350_000 } as Ctx)
@@ -1029,7 +1029,7 @@ export const register: Register = (on, opcoes) => {
         const { cheias, vazias } = barraFina(pctBarra, largura)
         return (
           <Text>
-            <Text color={TRACO[nivel]}>{TRACO_BARRA.repeat(cheias)}</Text>
+            <Text color={TRACO[nivel]}>{cheias > 0 ? `${TRACO_BARRA.repeat(cheias - 1)}${CABECA}` : ''}</Text>
             <Text color={TRACO.neutro} dimColor>{TRACO_BARRA.repeat(vazias)}</Text>
           </Text>
         )
@@ -1040,7 +1040,7 @@ export const register: Register = (on, opcoes) => {
       // One row, each segment in its own spot: ctx anchored left, 5h and 7d spread across the middle, effort at the right edge.
       // The right padding keeps clear of the app's own collapse control.
       linha1 = (
-        <Box flexDirection="row" width="100%" justifyContent="space-between" paddingRight={5}>
+        <Box flexDirection="row" width="100%" gap={4} paddingRight={5}>
           <Box flexDirection="row" flexShrink={0}>
             <Text dimColor>ctx </Text>
             {fina(pct ?? 0, n, nivelCtx)}

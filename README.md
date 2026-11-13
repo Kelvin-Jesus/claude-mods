@@ -3,7 +3,7 @@
 **Keep every Claude Code chat in rhythm.** Cadence picks the right effort for each prompt, shows how much context you have spent, and tells you when to compact or start fresh, before it costs you.
 
 ```
-ctx ▂▂▂▂▂▂▂▂▂▂ 31% 109k/350k        5h ▂▂▂▂▂▂▂▂ 8% ↻ 2h15m        7d 21%        ◑ high
+ctx ▂▂▂●▂▂▂▂▂▂ 31% 109k/350k    5h ▂●▂▂▂▂▂▂ 8% ↻ 2h15m    7d 21%    ◑ high
 ```
 
 The band is thin lines and plain text: no backgrounds, no brackets. Bars take their tone from the level (green, amber, red), the percent matches its bar, and everything else is muted. A nonzero value always shows at least one cell. `TERM=dumb` falls back to ASCII.

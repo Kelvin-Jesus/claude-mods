@@ -62,6 +62,9 @@ export const barraAscii = (cheias: number, total: number) => `[${'#'.repeat(chei
 /** The bar glyph: a lower quarter block, a solid line a quarter of a cell tall that every terminal font draws without gaps. */
 export const TRACO_BARRA = '▂'
 
+/** A round head ends the fill, the closest a terminal gets to rounded edges. */
+export const CABECA = '●'
+
 /** Thin bar (TRACO_BARRA): filled cells carry the tone, the rest is a dim track. A nonzero value always shows one cell, zero shows none. */
 export function barraFina(pct: number, largura: number): { cheias: number; vazias: number } {
   const p = Math.max(0, pct)
