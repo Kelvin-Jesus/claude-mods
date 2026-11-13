@@ -59,8 +59,9 @@ export function cabe(colunas: number) {
 /** `[####------]` para terminal sem Unicode confiável (TERM=dumb). */
 export const barraAscii = (cheias: number, total: number) => `[${'#'.repeat(cheias)}${'-'.repeat(Math.max(0, total - cheias))}]`
 
-/** The bar glyph: a lower quarter block, a solid line a quarter of a cell tall that every terminal font draws without gaps. */
-export const TRACO_BARRA = '▂'
+/** Fill and track share the cell's vertical center with the round head: heavy line for the fill, light line for the track. */
+export const TRACO_BARRA = '━'
+export const TRACO_VAZIO = '─'
 
 /** A round head ends the fill, the closest a terminal gets to rounded edges. */
 export const CABECA = '●'

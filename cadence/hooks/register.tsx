@@ -82,7 +82,7 @@ import {
   type Veredito,
 } from './juizes'
 import { T, usarLingua } from './textos'
-import { barraAscii, barraFina, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, TRACO, TRACO_BARRA, CABECA, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
+import { barraAscii, barraFina, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, TRACO, TRACO_BARRA, TRACO_VAZIO, CABECA, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
 
 const P = 'cadence' as const
 const ctx = atom({ plugin: 'cadence', key: 'ctx' } as const, { tokens: null, janela: 350_000 } as Ctx)
@@ -1030,7 +1030,7 @@ export const register: Register = (on, opcoes) => {
         return (
           <Text>
             <Text color={TRACO[nivel]}>{cheias > 0 ? `${TRACO_BARRA.repeat(cheias - 1)}${CABECA}` : ''}</Text>
-            <Text color={TRACO.neutro} dimColor>{TRACO_BARRA.repeat(vazias)}</Text>
+            <Text color={TRACO.neutro} dimColor>{TRACO_VAZIO.repeat(vazias)}</Text>
           </Text>
         )
       }
