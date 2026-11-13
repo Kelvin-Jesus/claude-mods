@@ -1037,33 +1037,36 @@ export const register: Register = (on, opcoes) => {
       const cinco = ls.find(l => l.kind === 'five_hour')
       const sete = ls.find(l => l.kind === 'seven_day')
       const falta = cinco ? contagem(cinco.resetsAt, agora) : ''
-      // One row, three segments three spaces apart: ctx, 5h with its countdown, 7d. The effort closes the row; the cache timer lives in /cadence and in the warnings.
+      // One row, each segment in its own spot: ctx anchored left, 5h and 7d spread across the middle, effort at the right edge.
+      // The right padding keeps clear of the app's own collapse control.
       linha1 = (
-        <Box flexDirection="row" width="100%">
-          <Text dimColor>ctx </Text>
-          {fina(pct ?? 0, n, nivelCtx)}
-          <Text color={nivelCtx === 'ok' ? undefined : TEMA[nivelCtx]} weight={pesado ? 'semibold' : undefined}>
-            {pct === null ? ' —' : ` ${Math.round(pct)}%`}
-          </Text>
-          <Text dimColor>{tokens === null ? ` ${fmtK(janela)}` : ` ${fmtK(tokens)}${cabem.orcamento ? `/${fmtK(janela)}` : ''}`}</Text>
-          {cinco ? [
-            <Text key="g5">{'   '}</Text>,
-            <Text key="l5" dimColor>5h </Text>,
-            <Text key="b5">{fina(cinco.pct, Math.max(4, n - 2), nivelLimite(cinco.pct))}</Text>,
-            <Text key="p5" color={TEMA[nivelLimite(cinco.pct)]}>{` ${Math.round(cinco.pct)}%`}</Text>,
-            falta && cols >= 80 ? <Text key="r5" dimColor>{` ${ascii ? '' : '↻ '}${falta}`}</Text> : null,
-          ] : null}
-          {sete && cabem.orcamento ? [
-            <Text key="g7">{'   '}</Text>,
-            <Text key="l7" dimColor>7d </Text>,
-            <Text key="p7" color={TEMA[nivelLimite(sete.pct)]}>{`${Math.round(sete.pct)}%`}</Text>,
-          ] : null}
-          <Text>{'   '}</Text>
-          {esforco}
-          {compactaTxt ? [
-            <Text key="gc">{'   '}</Text>,
-            <Text key="cp" color={TEMA.info}>{compactaTxt}</Text>,
-          ] : null}
+        <Box flexDirection="row" width="100%" justifyContent="space-between" paddingRight={5}>
+          <Box flexDirection="row" flexShrink={0}>
+            <Text dimColor>ctx </Text>
+            {fina(pct ?? 0, n, nivelCtx)}
+            <Text color={nivelCtx === 'ok' ? undefined : TEMA[nivelCtx]} weight={pesado ? 'semibold' : undefined}>
+              {pct === null ? ' —' : ` ${Math.round(pct)}%`}
+            </Text>
+            <Text dimColor>{tokens === null ? ` ${fmtK(janela)}` : ` ${fmtK(tokens)}${cabem.orcamento ? `/${fmtK(janela)}` : ''}`}</Text>
+          </Box>
+          {cinco ? (
+            <Box flexDirection="row" flexShrink={0}>
+              <Text dimColor>5h </Text>
+              {fina(cinco.pct, Math.max(4, n - 2), nivelLimite(cinco.pct))}
+              <Text color={TEMA[nivelLimite(cinco.pct)]}>{` ${Math.round(cinco.pct)}%`}</Text>
+              {falta && cols >= 80 ? <Text dimColor>{` ${ascii ? '' : '↻ '}${falta}`}</Text> : null}
+            </Box>
+          ) : null}
+          {sete && cabem.orcamento ? (
+            <Box flexDirection="row" flexShrink={0}>
+              <Text dimColor>7d </Text>
+              <Text color={TEMA[nivelLimite(sete.pct)]}>{`${Math.round(sete.pct)}%`}</Text>
+            </Box>
+          ) : null}
+          <Box flexDirection="row" flexShrink={1}>
+            {compactaTxt ? <Text color={TEMA.info}>{compactaTxt}{'   '}</Text> : null}
+            {esforco}
+          </Box>
         </Box>
       )
     }
