@@ -82,7 +82,7 @@ import {
   type Veredito,
 } from './juizes'
 import { T, usarLingua } from './textos'
-import { barraAscii, barraFina, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, TRACO, TRACO_BARRA, TRACO_VAZIO, CABECA, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
+import { barraAscii, barraFina, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, TRACO, TRILHO, CAPA_ESQ, CAPA_DIR, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
 
 const P = 'cadence' as const
 const ctx = atom({ plugin: 'cadence', key: 'ctx' } as const, { tokens: null, janela: 350_000 } as Ctx)
@@ -1027,10 +1027,13 @@ export const register: Register = (on, opcoes) => {
       const fina = (pctBarra: number, largura: number, nivel: Nivel) => {
         if (ascii) return <Text color={TEMA[nivel]}>{barraAscii(Math.round((pctBarra * largura) / 100), largura)}</Text>
         const { cheias, vazias } = barraFina(pctBarra, largura)
+        const cor = TRACO[nivel]
         return (
           <Text>
-            <Text color={TRACO[nivel]}>{cheias > 0 ? `${TRACO_BARRA.repeat(cheias - 1)}${CABECA}` : ''}</Text>
-            <Text color={TRACO.neutro} dimColor>{TRACO_VAZIO.repeat(vazias)}</Text>
+            <Text color={cheias > 0 ? cor : TRILHO}>{CAPA_ESQ}</Text>
+            <Text backgroundColor={cor}>{' '.repeat(cheias)}</Text>
+            <Text backgroundColor={TRILHO}>{' '.repeat(vazias)}</Text>
+            <Text color={vazias === 0 ? cor : TRILHO}>{CAPA_DIR}</Text>
           </Text>
         )
       }

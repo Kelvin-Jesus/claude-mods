@@ -1,6 +1,6 @@
 import { expect, mock, test } from 'claude-code/testing'
 
-import { TRACO } from '../hooks/visual'
+import { TRACO, TRILHO } from '../hooks/visual'
 
 const CONVERSA = [
   { role: 'user' as const, text: 'corrige o login', toolUses: [] },
@@ -180,8 +180,8 @@ test('desktop: anel de contexto e medidor de limite com texto alternativo; termi
 
   const term = await $.ui.mount({ ...BANDA, surface: 'terminal' })
   expect((await term.find({ type: 'Text', text: ' 76%' }))?.props.color).toBe('warning')
-  expect((await term.find({ type: 'Text', text: /^━{3}●$/ }))?.props.color).toBe(TRACO.ok)
-  expect((await term.find({ type: 'Text', text: /^─{6}$/ }))?.text).toBe('──────')
+  expect(await term.find({ type: 'Text', props: { backgroundColor: TRACO.ok } })).toBeTruthy()
+  expect(await term.find({ type: 'Text', props: { backgroundColor: TRILHO } })).toBeTruthy()
   await term.unmount()
 })
 

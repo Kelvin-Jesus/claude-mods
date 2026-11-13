@@ -59,14 +59,13 @@ export function cabe(colunas: number) {
 /** `[####------]` para terminal sem Unicode confiável (TERM=dumb). */
 export const barraAscii = (cheias: number, total: number) => `[${'#'.repeat(cheias)}${'-'.repeat(Math.max(0, total - cheias))}]`
 
-/** Fill and track share the cell's vertical center with the round head: heavy line for the fill, light line for the track. */
-export const TRACO_BARRA = '━'
-export const TRACO_VAZIO = '─'
+/** Rounded ends, like a CSS border-radius: Powerline half-circles around a row of background-colored cells. Needs a Powerline or Nerd Font. */
+export const CAPA_ESQ = '\uE0B6'
+export const CAPA_DIR = '\uE0B4'
+/** The unfilled part of the bar, decorative so it needs no contrast ratio. */
+export const TRILHO = '#3f3f46'
 
-/** A round head ends the fill, the closest a terminal gets to rounded edges. */
-export const CABECA = '●'
-
-/** Thin bar (TRACO_BARRA): filled cells carry the tone, the rest is a dim track. A nonzero value always shows one cell, zero shows none. */
+/** Bar cells: filled cells carry the tone, the rest is a dim track. A nonzero value always shows one cell, zero shows none. */
 export function barraFina(pct: number, largura: number): { cheias: number; vazias: number } {
   const p = Math.max(0, pct)
   const cheias = Math.min(largura, Math.max(p > 0 ? 1 : 0, Math.floor((p * largura) / 100)))
