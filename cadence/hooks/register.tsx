@@ -1034,7 +1034,6 @@ export const register: Register = (on, opcoes) => {
           </Text>
         )
       }
-      const gap = <Text>{'   '}</Text>
       const cinco = ls.find(l => l.kind === 'five_hour')
       const sete = ls.find(l => l.kind === 'seven_day')
       const falta = cinco ? contagem(cinco.resetsAt, agora) : ''
@@ -1051,22 +1050,22 @@ export const register: Register = (on, opcoes) => {
             {esforco}
             {cache ? sep : null}
             {cache}
-            {cinco ? (
-              <>
-                {gap}
-                <Text dimColor>5h </Text>
-                {fina(cinco.pct, Math.max(4, n - 2), nivelLimite(cinco.pct))}
-                <Text color={TEMA[nivelLimite(cinco.pct)]}>{` ${Math.round(cinco.pct)}%`}</Text>
-                {falta && cols >= 80 ? <Text dimColor>{` ${ascii ? '' : '↻ '}${falta}`}</Text> : null}
-              </>
-            ) : null}
-            {sete && cabem.orcamento ? (
-              <>
-                {gap}
-                <Text dimColor>7d </Text>
-                <Text color={TEMA[nivelLimite(sete.pct)]}>{`${Math.round(sete.pct)}%`}</Text>
-              </>
-            ) : null}
+            {cinco
+              ? [
+                  <Text key="g5">{'   '}</Text>,
+                  <Text key="l5" dimColor>5h </Text>,
+                  <Text key="b5">{fina(cinco.pct, Math.max(4, n - 2), nivelLimite(cinco.pct))}</Text>,
+                  <Text key="p5" color={TEMA[nivelLimite(cinco.pct)]}>{` ${Math.round(cinco.pct)}%`}</Text>,
+                  falta && cols >= 80 ? <Text key="r5" dimColor>{` ${ascii ? '' : '↻ '}${falta}`}</Text> : null,
+                ]
+              : null}
+            {sete && cabem.orcamento
+              ? [
+                  <Text key="g7">{'   '}</Text>,
+                  <Text key="l7" dimColor>7d </Text>,
+                  <Text key="p7" color={TEMA[nivelLimite(sete.pct)]}>{`${Math.round(sete.pct)}%`}</Text>,
+                ]
+              : null}
           </Box>
           {compactaTxt ? (
             <Box flexShrink={0}>
