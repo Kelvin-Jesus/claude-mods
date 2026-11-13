@@ -38,6 +38,8 @@ export type Gasto = {
     usdSessaoEstimado: number
   }
   handoffs: number
+  /** Subagentes com esforço escolhido pelo cadence, por esforço. */
+  subagentes: Partial<Record<Esforco, number>>
 }
 
 export type Ctx = { tokens: number | null; janela: number }
@@ -69,6 +71,8 @@ declare module 'claude-code' {
       etapa: 'escrevendo' | 'limpando' | 'compactando' | null
       fechados: Fechados
       gasto: Gasto
+      /** O esforço que o cadence deu a cada subagente, pela chamada do Agent que o criou (tool_use_id). */
+      rotas: Record<string, { esforco: Esforco; motivo: string }>
     }
   }
 }

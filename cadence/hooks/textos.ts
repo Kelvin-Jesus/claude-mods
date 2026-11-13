@@ -83,6 +83,7 @@ const EN = {
   // reasons shown next to the effort
   motivoPedido: 'you asked',
   motivoSeguindo: 'following up',
+  rotaSubagente: (esforco: string, motivo: string) => `cadence: effort ${esforco}${motivo ? ` · ${motivo}` : ''}`,
   motivoEconomia: 'saver mode',
   motivoLimites: 'your limits',
   motivoApp: 'your pick in the app',
@@ -137,6 +138,7 @@ const EN = {
       `Compactions: ${h} by Haiku, ${s} by the chat model, ${f} Haiku failures. ${antes} → ${depois} tokens.`,
     economiaCompactar: (u: string, s: string) => `  Haiku cost ${u}; the chat model would cost ~${s} (estimate, warm cache).`,
     handoffs: (n: number) => `Handoffs: ${n}.`,
+    subagentes: (n: number, quais: string) => `Subagents: ${n} routed (${quais}).`,
   },
 
   // /cadence bench
@@ -247,6 +249,7 @@ const PT: Textos = {
 
   motivoPedido: 'você pediu',
   motivoSeguindo: 'seguindo',
+  rotaSubagente: (esforco: string, motivo: string) => `cadence: esforço ${esforco}${motivo ? ` · ${motivo}` : ''}`,
   motivoEconomia: 'modo economia',
   motivoLimites: 'seus limites',
   motivoApp: 'sua escolha no app',
@@ -299,6 +302,7 @@ const PT: Textos = {
       `Compactações: ${h} pelo Haiku, ${s} pelo modelo do chat, ${f} falhas do Haiku. ${antes} → ${depois} tokens.`,
     economiaCompactar: (u: string, s: string) => `  Haiku custou ${u}; o modelo do chat custaria ~${s} (estimativa, cache quente).`,
     handoffs: (n: number) => `Handoffs: ${n}.`,
+    subagentes: (n: number, quais: string) => `Subagentes: ${n} roteados (${quais}).`,
   },
 
   bench: {

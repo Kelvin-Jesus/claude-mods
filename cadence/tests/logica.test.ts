@@ -5,6 +5,7 @@ import {
   comManifesto,
   economizado,
   ehSeguimento,
+  esforcoDoSubagente,
   esforcoPedido,
   inclinado,
   lerConfig,
@@ -12,6 +13,7 @@ import {
   lerVeredito,
   limitado,
   manifesto,
+  mensagemSubagente,
   mantemEsforco,
   notaBench,
   rotuloCache,
@@ -142,4 +144,30 @@ test('nota do bench', async () => {
   expect(notaBench(caso, 'low')).toBe('baixo')
   expect(notaBench(caso, 'max')).toBe('alto')
   expect(notaBench(caso, undefined)).toBe('nada')
+})
+
+test('subagente: o juiz decide pela tarefa dele, dentro dos limites', async () => {
+  const cfg = { piso: 'low', teto: 'max', vies: 0 } as const
+  const principal = { esforco: 'high', motivo: '', por: 'haiku' } as const
+  expect(esforcoDoSubagente({ principal, veredito: { esforco: 'low', certeza: 0.9 }, config: cfg, economia: false })?.esforco).toBe('low')
+  expect(esforcoDoSubagente({ principal, veredito: { esforco: 'xhigh', certeza: 0.9 }, config: cfg, economia: true })?.esforco).toBe('medium')
+  expect(esforcoDoSubagente({ principal, veredito: { esforco: 'max', certeza: 0.9 }, config: { ...cfg, teto: 'high' }, economia: false })?.esforco).toBe('high')
+})
+
+test('subagente: pedido explícito ganha do juiz; sem veredito, o piso de ajudante', async () => {
+  const cfg = { piso: 'low', teto: 'max', vies: 0 } as const
+  const pediu = { esforco: 'max', motivo: '', por: 'pedido' } as const
+  expect(esforcoDoSubagente({ principal: pediu, veredito: { esforco: 'low' }, config: cfg, economia: false })?.esforco).toBe('max')
+  const juiz = { esforco: 'low', motivo: '', por: 'haiku' } as const
+  expect(esforcoDoSubagente({ principal: juiz, pedido: 'xhigh', veredito: { esforco: 'low' }, config: cfg, economia: false })?.esforco).toBe('xhigh')
+  expect(esforcoDoSubagente({ principal: juiz, config: cfg, economia: false })?.esforco).toBe('medium')
+  expect(esforcoDoSubagente({ principal: null, config: cfg, economia: false })).toBe(undefined)
+})
+
+test('subagente: o juiz lê o tipo, a descrição e o prompt, com o aviso antes', async () => {
+  const m = mensagemSubagente('Explore', 'achar o login', `procura ${'x'.repeat(5000)}`)
+  expect(m.startsWith('[')).toBe(true)
+  expect(m).toContain('Explore')
+  expect(m).toContain('achar o login')
+  expect(m.length <= 2000).toBe(true)
 })

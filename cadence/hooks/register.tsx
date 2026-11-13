@@ -1,5 +1,5 @@
 import { atom, read, update } from 'claude-code'
-import type { Elements, EngineInterface, ModelForkResult, Register, SessionMessage, SessionRateLimit, UiPressArgument } from 'claude-code'
+import type { AgentSpawnInput, Elements, EngineInterface, ModelForkResult, Register, SessionMessage, SessionRateLimit, UiPressArgument } from 'claude-code'
 
 import type { Ctx, Escolha, Esforco, Fechados, Gasto, Limite } from '../types'
 import {
@@ -34,6 +34,8 @@ import {
   MAX_CARACTERES,
   mensagemCompactada,
   mensagemHandoff,
+  mensagemSubagente,
+  esforcoDoSubagente,
   noMeioDoTurno,
   NOME_ESFORCO,
   perguntaJuiz,
@@ -96,6 +98,7 @@ const etapa = atom({ plugin: 'cadence', key: 'etapa' } as const, null as 'escrev
 const FECHADOS_VAZIO: Fechados = { frio: false, pantanoAte: null, conselho: null, quente: null }
 const fechados = atom({ plugin: 'cadence', key: 'fechados' } as const, FECHADOS_VAZIO)
 const gasto = atom({ plugin: 'cadence', key: 'gasto' } as const, GASTO_VAZIO)
+const rotasUi = atom({ plugin: 'cadence', key: 'rotas' } as const, {} as Record<string, { esforco: Esforco; motivo: string }>)
 
 /** Abaixo disto um cache frio custa pouco: a próxima mensagem relê o chat a preço cheio uma vez só. */
 const FRIO_MIN = 100_000
@@ -125,6 +128,8 @@ let cacheTtl: Ttl = '1h'
 let ascii = false
 let ultimaRespostaEm: number | undefined
 let conselhoContador = 0
+/** O esforço escolhido para cada subagente, pelo id do loop dele. */
+const rotas = new Map<string, Escolha | undefined>()
 let handoff: { fila: boolean; completo: boolean; depois: Config['depoisHandoff']; texto?: string; dirigindo: boolean } = {
   fila: false,
   completo: false,
@@ -311,10 +316,11 @@ const julgarCom = async ($: $, modo: ModoJuiz, mensagem: string, modelo: string,
   return { veredito: r.isAnswered ? lerVeredito(r.text) : undefined, por: 'haiku', usd, falhas }
 }
 
-const julgar = async ($: $, mensagem: string, modelo: string, atual: Esforco) => {
-  const msgs = await $.session.messages().catch(() => [] as SessionMessage[])
+/** `subagente`: a tarefa roda num loop sem a conversa, então o juiz não lê a conversa nem o contexto usado. */
+const julgar = async ($: $, mensagem: string, modelo: string, atual: Esforco, subagente = false) => {
+  const msgs = subagente ? [] : await $.session.messages().catch(() => [] as SessionMessage[])
   const c = await read($, ctx)
-  const pct = c.tokens !== null ? (c.tokens / c.janela) * 100 : undefined
+  const pct = !subagente && c.tokens !== null ? (c.tokens / c.janela) * 100 : undefined
   const inicio = await $.clock.now()
   const j = await julgarCom($, config.juiz, mensagem, modelo, atual, contextoDe(msgs), pct, 6000)
   const ms = (await $.clock.now()) - inicio
@@ -361,6 +367,31 @@ const decidir = async ($: $, bruto: string, lido: string, modelo: string, atual:
   const final = economizado(ajustado, economia)
   const motivo = final !== ajustado ? T.motivoEconomia : ajustado !== veredito.esforco ? T.motivoLimites : veredito.motivo
   return { esforco: final, motivo, por, certeza: veredito.certeza }
+}
+
+/** O esforço de um subagente que vai nascer: o mesmo juiz do prompt, lendo só a tarefa dele. */
+const rotear = async ($: $, e: AgentSpawnInput): Promise<Escolha | undefined> => {
+  const modelo = e.model ?? e.parentModel
+  if (semEsforco(modelo) || !e.prompt.trim()) return undefined
+  const principal = await read($, escolha)
+  if (principal?.por === 'manual') return undefined
+  const pedido = esforcoPedido(e.prompt)
+  const julgado =
+    principal?.por === 'pedido' || pedido
+      ? undefined
+      : await julgar($, mensagemSubagente(e.subagentType, e.description, e.prompt), modelo, principal?.esforco ?? 'medium', true)
+  const final = esforcoDoSubagente({
+    principal,
+    pedido,
+    veredito: julgado?.veredito,
+    config,
+    economia: (await read($, economiaAte)) !== null,
+    porJuiz: julgado?.por,
+  })
+  if (!final) return undefined
+  await somar($, g => ({ ...g, subagentes: { ...g.subagentes, [final.esforco]: (g.subagentes[final.esforco] ?? 0) + 1 } }))
+  if (e.tool_use_id) await update($, rotasUi, m => ({ ...m, [e.tool_use_id]: { esforco: final.esforco, motivo: final.motivo } }))
+  return final
 }
 
 /** A skill ou comando do usuário que "/nome args" roda; nada para os comandos do próprio app. */
@@ -654,6 +685,20 @@ export const register: Register = (on, opcoes) => {
     return next(e)
   })
 
+  // Roteador: cada subagente novo ganha o esforço da tarefa dele. O juiz começa antes do spawn e é esperado depois,
+  // para o subagente subir enquanto o juiz pensa. Um retomado mantém o esforço que já tinha.
+  on('agent.spawn', async ($, e, next) => {
+    if (e.resume || !(await read($, auto))) return next(e)
+    const rota = rotear($, e).catch(() => undefined)
+    const r = await next(e)
+    const final = await rota
+    if (r.agentId && !('deny' in r)) {
+      rotas.set(r.agentId, final)
+      if (rotas.size > 500) rotas.delete(rotas.keys().next().value!)
+    }
+    return r
+  })
+
   // Cada requisição vai com o esforço escolhido; as respostas da conversa principal reacendem o cronômetro do cache.
   on('turn.step', async function* ($, e, next) {
     const principal = e.agentId === undefined
@@ -674,7 +719,11 @@ export const register: Register = (on, opcoes) => {
     const esc = await read($, escolha)
     const ligado = await read($, auto)
     let pedido = e
-    if (ligado && esc && esc.por !== 'manual' && typeof e.effort === 'string' && cacheSeguro(e.model) && !semEsforco(e.model)) {
+    const rota = principal ? undefined : rotas.get(e.agentId!)
+    if (ligado && rota && typeof e.effort === 'string' && !semEsforco(e.model)) {
+      // O subagente roteado tem um esforço só, do primeiro pedido ao último: o cache dele não se perde.
+      pedido = { ...e, effort: rota.esforco }
+    } else if (ligado && esc && esc.por !== 'manual' && typeof e.effort === 'string' && cacheSeguro(e.model) && !semEsforco(e.model)) {
       pedido = { ...e, effort: principal ? esc.esforco : pisoAjudante(esc.esforco) }
     }
     const resposta = yield* next(pedido)
@@ -837,6 +886,21 @@ export const register: Register = (on, opcoes) => {
   // Duas linhas. A 1 é o estado (contexto, esforço, cache) com as pílulas dos limites à direita; a 2 é um aviso
   // por vez, o mais urgente, com o botão que resolve primeiro. No desktop o contexto e o cache viram anéis e os
   // limites viram medidores; no terminal, quadradinhos e pílulas. Ver hooks/visual.ts para as regras de contraste.
+
+  // Embaixo da linha do Agent, o esforço que o roteador deu ao subagente.
+  on('ui.render', { component: 'ToolUse' }, async ($, e, next) => {
+    if (e.props.tool !== 'Agent') return next(e)
+    const r = (await read($, rotasUi))[e.props.tool_use_id]
+    if (!r) return next(e)
+    const { Box, Text } = $.ui.resolve(e)
+    const linha = await next(e)
+    return (
+      <Box flexDirection="column">
+        {linha}
+        <Text dimColor>{`${ascii ? '' : `${GLIFO[r.esforco]} `}${T.rotaSubagente(NOME_ESFORCO[r.esforco], r.motivo)}`}</Text>
+      </Box>
+    )
+  })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey) return next(e)

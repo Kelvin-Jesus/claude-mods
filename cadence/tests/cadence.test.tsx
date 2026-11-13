@@ -277,3 +277,53 @@ test('Jev with the key from options: Bearer on the request, unsure goes to Haiku
   expect(auth).toEqual(['Bearer ts_teste'])
   expect(haiku).toBe(1)
 })
+
+const SPAWN = {
+  tool_use_id: 'tu1',
+  subagentType: 'Explore',
+  provider: { plugin: 'engine', tier: 'core' },
+  parentModel: 'claude-opus-5-5',
+  background: false,
+  fork: false,
+} as const
+const CMD = { command: 'cadence', origin: { kind: 'composer' }, presentation: { isFullscreen: false } }
+
+test('o juiz escolhe o esforço de cada subagente pela tarefa dele', async ($, on) => {
+  mock.clock(on)
+  const perguntas: string[] = []
+  on('session.messages', () => ({ value: [] }))
+  on('session.model', () => ({ value: 'claude-opus-5-5' }))
+  on('command.list', () => ({ value: [] }))
+  on('model.complete', (_, e) => {
+    perguntas.push(String(e.prompt))
+    const sub = String(e.prompt).includes('subagent')
+    return { value: { isAnswered: true, text: sub ? '{"effort":"low","sure":0.9,"why":"só busca"}' : '{"effort":"high","sure":0.9,"why":"refator"}', usage: USO } }
+  })
+  on('prompt.submit', (_, e) => ({ text: e.text }))
+  on('agent.spawn', () => ({ model: 'claude-sonnet-5-5', agentId: 'a1' }))
+  on('session.usage', () => ({ value: { startedAt: 0, context: { tokens: 1000, window: 1_000_000, percent: 0 }, rateLimits: [] } }))
+
+  await $.prompt.submit({ text: 'refatora o módulo de auth inteiro', wait: false, origin: { kind: 'composer' } })
+  await $.agent.spawn({ ...SPAWN, prompt: 'acha onde o login valida a senha', description: 'achar login' })
+
+  expect(perguntas.some(p => p.includes('acha onde o login valida a senha'))).toBe(true)
+  const { text } = await $.command.run({ ...CMD, args: 'stats' } as never)
+  expect(String(text)).toMatch(/Subagents: 1 routed \(low 1\)/)
+})
+
+test('com o auto desligado, o subagente não passa pelo juiz', async ($, on) => {
+  mock.clock(on)
+  let juiz = 0
+  on('session.messages', () => ({ value: [] }))
+  on('session.model', () => ({ value: 'claude-opus-5-5' }))
+  on('model.complete', () => {
+    juiz++
+    return { value: { isAnswered: true, text: '{"effort":"low","sure":0.9,"why":"x"}', usage: USO } }
+  })
+  on('agent.spawn', () => ({ model: 'claude-sonnet-5-5', agentId: 'a1' }))
+
+  await $.command.run({ ...CMD, args: 'auto' } as never)
+  await $.agent.spawn({ ...SPAWN, prompt: 'acha o login', description: 'achar' })
+
+  expect(juiz).toBe(0)
+})

@@ -2,7 +2,7 @@
 // O juiz de esforço, o prompt de handoff e a compactação por Haiku partem do effortless
 // (github.com/HeyCubit/effortless, MIT), adaptados para português e para a barra em tokens.
 
-import type { Esforco, Escolha, Gasto, ModoJuiz } from '../types'
+import type { Esforco, Escolha, Gasto, ModoJuiz, NomeJuiz } from '../types'
 import { T, type Lingua } from './textos'
 
 export const ESFORCOS: Esforco[] = ['low', 'medium', 'high', 'xhigh', 'max']
@@ -56,6 +56,7 @@ export const GASTO_VAZIO: Gasto = {
   juiz: { vezes: 0, ms: 0, usd: 0, seguimentos: 0, pedidos: 0, por: {}, falhas: 0 },
   compactacoes: { haiku: 0, sessao: 0, falhas: 0, antes: 0, depois: 0, usd: 0, usdSessaoEstimado: 0 },
   handoffs: 0,
+  subagentes: {},
 }
 
 /** Um valor guardado por uma versão anterior, completado com os campos que faltarem. */
@@ -67,6 +68,7 @@ export function comoGasto(v: unknown): Gasto {
     porEsforco: { ...(o.porEsforco ?? {}) },
     juiz: { ...GASTO_VAZIO.juiz, ...(o.juiz ?? {}), por: { ...(o.juiz?.por ?? {}) } },
     compactacoes: { ...GASTO_VAZIO.compactacoes, ...(o.compactacoes ?? {}) },
+    subagentes: { ...(o.subagentes ?? {}) },
   }
 }
 
@@ -151,6 +153,38 @@ export function economizado(e: Esforco, economia: boolean): Esforco {
 export const acima = (a: Esforco, b: Esforco) => ESFORCOS.indexOf(a) > ESFORCOS.indexOf(b)
 /** Subagente devolve resposta sem revisão: nunca abaixo de médio. */
 export const pisoAjudante = (e: Esforco): Esforco => (acima('medium', e) ? 'medium' : e)
+
+/**
+ * O que o juiz lê sobre um subagente: o aviso vem primeiro porque a pergunta corta a mensagem em 2000 caracteres.
+ * O subagente começa sem a conversa, então o juiz julga só a tarefa dele.
+ */
+export function mensagemSubagente(tipo: string, descricao: string, prompt: string): string {
+  const aviso = `[A ${tipo} subagent runs this task alone: it gets only the prompt below, cannot ask anything back, and its answer goes to the main agent. Judge the effort this task needs, not the main conversation. Finding or reading files is low; writing, debugging or reviewing code is medium or more.]`
+  return `${aviso}\n\nTask: ${descricao}\n\n${prompt}`.slice(0, 2000)
+}
+
+/**
+ * O esforço de um subagente. Um pedido explícito da pessoa na conversa principal vale para os subagentes dela;
+ * depois, um esforço escrito no prompt do subagente; depois, o juiz sobre a tarefa, nos limites e na economia;
+ * sem veredito, o piso de ajudante sobre o esforço principal.
+ */
+export function esforcoDoSubagente(o: {
+  principal: Escolha | null
+  pedido?: Esforco
+  veredito?: { esforco: Esforco; certeza?: number; motivo?: string }
+  config: Pick<Config, 'piso' | 'teto' | 'vies'>
+  economia: boolean
+  porJuiz?: NomeJuiz
+}): Escolha | undefined {
+  if (o.principal?.por === 'pedido') return { ...o.principal }
+  if (o.pedido) return { esforco: o.pedido, motivo: '', por: 'pedido' }
+  if (o.veredito) {
+    const v = o.veredito
+    const esforco = economizado(limitado(inclinado(v.esforco, v.certeza, o.config.vies), o.config.piso, o.config.teto), o.economia)
+    return { esforco, motivo: v.motivo ?? '', por: o.porJuiz ?? 'haiku', ...(v.certeza !== undefined ? { certeza: v.certeza } : {}) }
+  }
+  return o.principal ? { ...o.principal, esforco: pisoAjudante(o.principal.esforco), por: 'seguimento' } : undefined
+}
 
 /** "ok", "vai", "sim", "pode ir": até duas palavras e doze caracteres. */
 export function ehSeguimento(texto: string): boolean {
@@ -545,6 +579,9 @@ export function textoGasto(g: Gasto, sessaoUsd?: number): string {
     if (c.haiku) linhas.push(T.gasto.economiaCompactar(fmtUsd(c.usd), fmtUsd(c.usdSessaoEstimado)))
   }
   if (g.handoffs) linhas.push(T.gasto.handoffs(g.handoffs))
+  const subs = ESFORCOS.filter(e => g.subagentes[e])
+  if (subs.length)
+    linhas.push(T.gasto.subagentes(subs.reduce((n, e) => n + (g.subagentes[e] ?? 0), 0), subs.map(e => `${NOME_ESFORCO[e]} ${g.subagentes[e]}`).join(', ')))
   return linhas.join('\n')
 }
 

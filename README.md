@@ -23,6 +23,8 @@ Everything is in English by default. Set `language` to `pt-BR` and the band, toa
 
 **Auto effort.** Before each prompt, a fast judge reads the message and the end of the conversation and picks the effort, from low to max. "ok", "yes", "go on" keep the effort of the task in progress. Asking by name skips the judge: "max effort", "effort: low", "esforço máximo". A message typed mid-turn never lowers the effort of the task that is running. If you change the effort in the app, auto turns off and says so; `/cadence auto` turns it back on. It only acts on Opus and Sonnet 5.5, where changing effort keeps the prompt cache.
 
+**Effort routing for subagents.** Each subagent gets its own effort, picked by the same judge from its task alone: the type (`Explore`, `general-purpose`...), the short description and the prompt, without the main conversation. A file search runs at low while the main chat stays at high; a code review gets what it needs. The judge starts as the subagent spawns, so the subagent boots while it decides, and the effort stays the same for the whole run, which keeps that subagent's cache intact. A level written in the subagent's prompt wins over the judge, and an effort you asked for by name in the main chat applies to its subagents too. Limits, bias and Turn saver apply as they do to prompts. The Agent row shows the choice (`○ cadence: effort low · only reads files`), and `/cadence stats` counts subagents by effort. If the judge fails, the subagent falls back to the main effort with a medium floor, as before. Resumed subagents keep the effort they had.
+
 **Three judges, one of them offline.** The `judge` option picks who decides:
 
 | Judge | Runs on | Needs |
@@ -82,7 +84,7 @@ The band was redesigned after studying usage meters in shipped products (Claude,
 | `/cadence handoff [full] [continue\|wait\|copy]` | handoff without the band |
 | `/cadence compact [note]` | compacts now, with an optional note for the summary |
 | `/cadence saver` | effort at most medium until the limit resets |
-| `/cadence stats` | session cost, by effort, by judge and by compaction |
+| `/cadence stats` | session cost, by effort, by judge, by compaction and subagents routed |
 | `/cadence bench [pt] [haiku\|jev\|local]` | scores a judge on the labeled cases |
 | `/cadence help` | lists the commands |
 

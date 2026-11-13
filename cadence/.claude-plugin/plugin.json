@@ -1,7 +1,7 @@
 {
   "name": "cadence",
-  "version": "1.0.0",
-  "description": "A band that keeps the chat in rhythm: auto effort per prompt (Haiku, Jev, or an offline decision model via Ollaya), context in tokens, prompt cache timer, rate limits, Haiku compaction with a safety net, and one-click handoff",
+  "version": "1.1.0",
+  "description": "A band that keeps the chat in rhythm: auto effort per prompt and per subagent (Haiku, Jev, or an offline decision model via Ollaya), context in tokens, prompt cache timer, rate limits, Haiku compaction with a safety net, and one-click handoff",
   "types": "./types/index.d.ts",
   "userConfig": {
     "language": {
