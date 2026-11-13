@@ -59,8 +59,8 @@ export function cabe(colunas: number) {
 /** `[####------]` para terminal sem Unicode confiável (TERM=dumb). */
 export const barraAscii = (cheias: number, total: number) => `[${'#'.repeat(cheias)}${'-'.repeat(Math.max(0, total - cheias))}]`
 
-/** The bar glyph: a lower quarter block, a solid line that every terminal font draws without gaps. */
-export const TRACO_BARRA = '\u2582'
+/** The bar glyph: a heavy horizontal line, centered in the cell's height and thinner than a block. */
+export const TRACO_BARRA = '\u2501'
 
 /** The unfilled part of the bar, decorative so it needs no contrast ratio. */
 export const TRILHO = '#3f3f46'
