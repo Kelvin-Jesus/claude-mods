@@ -179,7 +179,8 @@ test('desktop: anel de contexto e medidor de limite com texto alternativo; termi
   const pilula = await term.find({ type: 'Text', text: / 5h 76% / })
   expect(pilula?.props.backgroundColor).toBe('#f5a524')
   expect(pilula?.props.color).toBe('#1f1e1d')
-  expect((await term.find({ type: 'Text', text: /■/ }))?.text).toBe('■■■■□□□□□□')
+  expect(await term.find({ type: 'Text', props: { color: '#5b5bd6' } })).toBeTruthy()
+  expect((await term.find({ type: 'Text', text: /^░+$/ }))?.text).toBe('░░░░░░')
   await term.unmount()
 })
 

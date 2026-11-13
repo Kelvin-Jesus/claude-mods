@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { barraAscii, cabe, nivelCache, nivelPct, PILULA, svgAnel, svgCache, svgMedidor, TRACO } from '../hooks/visual'
+import { barraAscii, barraGradiente, cabe, corGradiente, GRADIENTE, nivelCache, nivelPct, PILULA, svgAnel, svgCache, svgMedidor, TRACO } from '../hooks/visual'
 
 const lum = (hex: string) => {
   const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(c => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
@@ -50,4 +50,21 @@ test('o que cabe por largura e a barra ASCII', () => {
   expect(cabe(140)).toEqual({ orcamento: true, pilulaLonga: true, cache: true })
   expect(cabe(60).cache).toBe(false)
   expect(barraAscii(4, 10)).toBe('[####------]')
+})
+
+test('gradiente: pontas nos extremos e todos os tons ≥ 3:1 nos dois fundos', () => {
+  expect(corGradiente(0, 10)).toBe(GRADIENTE[0])
+  expect(corGradiente(9, 10)).toBe(GRADIENTE[2])
+  const lum = (h: string) => {
+    const [r, g, b] = [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16) / 255).map(c => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
+    return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!
+  }
+  const razao = (a: string, b: string) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05)
+  for (let i = 0; i < 10; i++) for (const fundo of ['#1f1e1d', '#faf9f5']) expect(razao(corGradiente(i, 10), fundo)).toBeGreaterThanOrEqual(3)
+})
+
+test('barra em gradiente: células cheias, borda em oitavos e o resto', () => {
+  expect(barraGradiente(0.4, 10)).toEqual({ cheias: 4, borda: '', resto: 6 })
+  expect(barraGradiente(0.98, 10)).toEqual({ cheias: 9, borda: '▊', resto: 0 })
+  expect(barraGradiente(1, 10)).toEqual({ cheias: 10, borda: '', resto: 0 })
 })

@@ -3,9 +3,11 @@
 **Keep every Claude Code chat in rhythm.** Cadence picks the right effort for each prompt, shows how much context you have spent, and tells you when to compact or start fresh, before it costs you.
 
 ```
-ctx ■■■■□□□□□□ 40% 140k/350k · ◑ high · cache 42m              compacts in 12 min   5h 62%
+ctx ████░░░░░░ 40% 140k/350k · ◑ high · cache 42m              compacts in 12 min   5h 62%
 │ Heavy context: every message rereads 310k        [ Compact ] [ New chat ] ✕
 ```
+
+The bar fills with a blue-to-magenta gradient, with eighth-block precision at the edge and a dotted track. Every tone passes 3:1 on light and dark themes, and `TERM=dumb` falls back to ASCII.
 
 In the desktop app the same band becomes a context ring, a cache arc and thin rate-limit meters, all with alt text for screen readers.
 

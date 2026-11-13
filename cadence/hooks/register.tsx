@@ -81,7 +81,7 @@ import {
   type Veredito,
 } from './juizes'
 import { T, usarLingua } from './textos'
-import { barraAscii, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
+import { barraAscii, barraGradiente, cabe, corGradiente, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
 
 const P = 'cadence' as const
 const ctx = atom({ plugin: 'cadence', key: 'ctx' } as const, { tokens: null, janela: 350_000 } as Ctx)
@@ -1023,12 +1023,16 @@ export const register: Register = (on, opcoes) => {
     } else {
       const n = celulas(cols)
       const cheias = tokens === null ? 0 : Math.min(n, Math.ceil((tokens / janela) * n - 1e-9))
+      const g = barraGradiente(tokens === null ? 0 : tokens / janela, n)
       const barra = ascii ? (
         <Text color={TEMA[nivelCtx]}>{barraAscii(cheias, n)}</Text>
       ) : (
         <Text>
-          <Text color={TEMA[nivelCtx]}>{'■'.repeat(cheias)}</Text>
-          <Text dimColor>{'□'.repeat(n - cheias)}</Text>
+          {Array.from({ length: g.cheias }, (_, i) => (
+            <Text key={i} color={corGradiente(i, n)}>█</Text>
+          ))}
+          {g.borda ? <Text color={corGradiente(g.cheias, n)}>{g.borda}</Text> : null}
+          <Text dimColor>{'░'.repeat(g.resto)}</Text>
         </Text>
       )
       const pilula = (key: string, nivel: Exclude<Nivel, 'neutro'>, texto: string) => (
