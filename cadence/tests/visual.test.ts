@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { barraAscii, barraFina, cabe, nivelCache, nivelPct, PILULA, svgAnel, svgCache, svgMedidor, TRACO } from '../hooks/visual'
+import { barraAscii, barraFina, cabe, nivelCache, nivelPct, PALETAS, PILULA, svgAnel, svgCache, svgMedidor, TRACO } from '../hooks/visual'
 
 const lum = (hex: string) => {
   const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(c => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
@@ -23,6 +23,15 @@ test('tons de gráfico: ≥ 3:1 nos dois fundos do app', () => {
   for (const [nome, cor] of Object.entries(TRACO)) {
     if (nome === 'neutro') continue // trilho decorativo: não carrega informação
     expect([nome, contraste(cor, FUNDO_ESCURO) >= 3, contraste(cor, FUNDO_CLARO) >= 3]).toEqual([nome, true, true])
+  }
+})
+
+test('temas: todo tom passa 3:1 nos dois fundos', () => {
+  for (const [tema, paleta] of Object.entries(PALETAS)) {
+    for (const [nome, cor] of Object.entries(paleta)) {
+      if (nome === 'neutro') continue
+      expect([tema, nome, contraste(cor, FUNDO_ESCURO) >= 3, contraste(cor, FUNDO_CLARO) >= 3]).toEqual([tema, nome, true, true])
+    }
   }
 })
 

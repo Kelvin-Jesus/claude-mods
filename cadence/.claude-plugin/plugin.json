@@ -108,6 +108,19 @@
         "2"
       ]
     },
+    "theme": {
+      "type": "string",
+      "title": "Band color theme",
+      "description": "Colors of the bars and desktop graphics. default, ocean, sunset, mono (grays) or colorblind (blue and orange). Every theme passes 3:1 contrast on light and dark.",
+      "default": "default",
+      "options": [
+        "default",
+        "ocean",
+        "sunset",
+        "mono",
+        "colorblind"
+      ]
+    },
     "compactWith": {
       "type": "string",
       "title": "Who writes the compaction summary",

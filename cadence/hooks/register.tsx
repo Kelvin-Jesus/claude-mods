@@ -82,7 +82,7 @@ import {
   type Veredito,
 } from './juizes'
 import { T, usarLingua } from './textos'
-import { barraAscii, barraFina, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PILULA, porExtenso, TRACO, TRILHO, TRACO_BARRA, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
+import { barraAscii, barraFina, cabe, GLIFO, nivelCache, nivelPct, NIVEL_ESFORCO, PALETAS, PILULA, porExtenso, TRILHO, TRACO_BARRA, svgAnel, svgCache, svgMedidor, TEMA, type Nivel } from './visual'
 
 const P = 'cadence' as const
 const ctx = atom({ plugin: 'cadence', key: 'ctx' } as const, { tokens: null, janela: 350_000 } as Ctx)
@@ -972,7 +972,7 @@ export const register: Register = (on, opcoes) => {
       const meio = (
         <Box flexDirection="row" alignItems="center" gap="sm">
           <Svg
-            source={svgAnel(pct ?? 0, nivelCtx)}
+            source={svgAnel(pct ?? 0, nivelCtx, PALETAS[config.tema])}
             width={24}
             height={24}
             alt={pct === null ? T.ctxSemMedida : T.ctxAlt(Math.round(pct), porExtenso(tokens!), porExtenso(janela))}
@@ -985,7 +985,7 @@ export const register: Register = (on, opcoes) => {
           {min !== null ? (
             <Box flexDirection="row" alignItems="center" gap="xs">
               <Svg
-                source={svgCache(min === 0 ? 0 : min - 1, TTL[cacheTtl] / 60_000, nCache!)}
+                source={svgCache(min === 0 ? 0 : min - 1, TTL[cacheTtl] / 60_000, nCache!, PALETAS[config.tema])}
                 width={20}
                 height={20}
                 alt={min === 0 ? T.cacheFrio : T.cacheRestam(cacheTxt ?? '')}
@@ -1006,7 +1006,7 @@ export const register: Register = (on, opcoes) => {
             <Box key={l.kind} flexDirection="row" alignItems="center" gap="xs">
               <Text dimColor size="footnote">{nomeLimite(l.kind)}</Text>
               <Svg
-                source={svgMedidor(l.pct, nivelLimite(l.pct))}
+                source={svgMedidor(l.pct, nivelLimite(l.pct), PALETAS[config.tema])}
                 width={56}
                 height={6}
                 alt={T.limiteAlt(l.kind === 'five_hour', Math.round(l.pct), l.resetsAt ? rotuloReset(l.resetsAt, agora) : '')}
@@ -1031,7 +1031,7 @@ export const register: Register = (on, opcoes) => {
         const { cheias, vazias } = barraFina(pctBarra, largura)
         return (
           <Text>
-            <Text color={TRACO[nivel]}>{TRACO_BARRA.repeat(cheias)}</Text>
+            <Text color={PALETAS[config.tema][nivel]}>{TRACO_BARRA.repeat(cheias)}</Text>
             <Text color={TRILHO}>{TRACO_BARRA.repeat(vazias)}</Text>
           </Text>
         )

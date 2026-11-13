@@ -17,6 +17,18 @@ Run `/reload-plugins` in chats that are already open. That's it: the band shows 
 > [!NOTE]
 > If [effortless](https://github.com/HeyCubit/effortless) is installed, disable it. Both pick the effort and compact, so they would fight.
 
+### Or let Claude install it
+
+Paste this into Claude Code:
+
+```text
+Install the cadence plugin for me:
+1. Run `claude plugin marketplace add Kelvin-Jesus/cadence`, then `claude plugin install cadence@kj-mods`.
+2. If the effortless plugin is installed, disable it. It also picks effort and compacts, so the two would conflict.
+3. In ~/.claude/settings.json, set env.CLAUDE_CODE_AUTO_COMPACT_WINDOW to "350000" so autocompact matches cadence's budget. Keep every other setting as it is.
+4. Tell me what you changed, and remind me to run /reload-plugins in chats that are already open.
+```
+
 ## Where your tokens go
 
 | The leak | What cadence does |
@@ -94,6 +106,8 @@ Set options with `/plugin configure cadence@kj-mods` or in `/config`.
 
 **Keep the judge offline.** `judge: local`, with [Ollaya](https://github.com/ollaya-dev/ollaya) running (see [Choose your judge](#choose-your-judge)).
 
+**Change the colors.** `theme: ocean`, `sunset`, `mono` or `colorblind`. Percent text keeps following your Claude Code theme.
+
 **Just the band.** `autoEffort: off` · `idleMinutes: 0` · `compactWith: session`. Cadence only shows and warns, and Claude Code does the rest.
 
 For Claude Code's own autocompact to match the band, use the same budget in `~/.claude/settings.json`:
@@ -117,6 +131,7 @@ For Claude Code's own autocompact to match the band, use the same budget in `~/.
 | `minEffort` | `low` | `low` → `max` | Auto never picks below this |
 | `maxEffort` | `max` | `low` → `max` | Auto never picks above this |
 | `bias` | `0` | `-2` → `2` | Cheaper or more thorough. Only moves the calls where the judge was unsure |
+| `theme` | `default` | `default` · `ocean` · `sunset` · `mono` · `colorblind` | Colors of the bars and desktop graphics. All pass 3:1 on light and dark. `colorblind` uses blue and orange |
 | `compactWith` | `haiku` | `haiku` · `session` | Who writes the compaction summary |
 | `idleMinutes` | `60` | `0` · `15` → `120` | Compact after this long idle. `0` turns it off |
 | `idleMinTokens` | `30000` | `15000` → `100000` | Smaller chats are not compacted when idle |

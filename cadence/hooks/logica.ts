@@ -4,6 +4,7 @@
 
 import type { Esforco, Escolha, Gasto, ModoJuiz, NomeJuiz } from '../types'
 import { T, type Lingua } from './textos'
+import { NOMES_TEMA, type NomeTema } from './visual'
 
 export const ESFORCOS: Esforco[] = ['low', 'medium', 'high', 'xhigh', 'max']
 /** The effort's name in the chosen language. */
@@ -92,6 +93,7 @@ export type Config = {
   juizModelo: string
   typesafeKey: string
   lingua: Lingua
+  tema: NomeTema
 }
 
 export const OPCOES = {
@@ -132,6 +134,7 @@ export function lerConfig(opcoes: unknown): Config {
     juizModelo: str(o.localModel),
     typesafeKey: str(o.typesafeKey),
     lingua: str(o.language) === 'pt-BR' ? 'pt-BR' : 'en',
+    tema: NOMES_TEMA.find(t => t === str(o.theme)) ?? 'default',
   }
 }
 

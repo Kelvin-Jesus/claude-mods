@@ -75,6 +75,7 @@ test('config: valor fora das opções volta ao padrão', async () => {
   expect(c.ociosoMin).toBe(30)
   expect(c.vies).toBe(2)
   expect(c.compactarCom).toBe('session')
+  expect(c.tema).toBe('default')
   expect(c.lingua).toBe('pt-BR')
   expect(lerConfig({ language: 'fr' }).lingua).toBe('en')
   expect(c.auto).toBe(false)

@@ -40,6 +40,18 @@ export const TRACO: Record<Nivel, string> = {
   neutro: '#8a8984',
 }
 
+export type NomeTema = 'default' | 'ocean' | 'sunset' | 'mono' | 'colorblind'
+export const NOMES_TEMA: readonly NomeTema[] = ['default', 'ocean', 'sunset', 'mono', 'colorblind']
+
+/** Palettes for the bars and desktop graphics; every tone but `neutro` passes 3:1 on both app backgrounds. */
+export const PALETAS: Record<NomeTema, Record<Nivel, string>> = {
+  default: TRACO,
+  ocean: { ok: '#1d9aa6', aviso: '#3f8fd2', critico: '#d2536b', info: '#2f86d6', destaque: '#7b6be6', neutro: '#8a8984' },
+  sunset: { ok: '#d2702a', aviso: '#b38400', critico: '#d93f5f', info: '#c4549a', destaque: '#8a63d2', neutro: '#8a8984' },
+  mono: { ok: '#8a8984', aviso: '#7f7e78', critico: '#74736d', info: '#8a8984', destaque: '#8a8984', neutro: '#8a8984' },
+  colorblind: { ok: '#2a7fc0', aviso: '#b87800', critico: '#d55e00', info: '#1a93b8', destaque: '#9a6bb5', neutro: '#8a8984' },
+}
+
 /** A forma do glifo também diz o nível, para quem não distingue as cores. */
 export const GLIFO: Record<Esforco, string> = { low: '○', medium: '◔', high: '◑', xhigh: '◕', max: '●' }
 export const NIVEL_ESFORCO: Record<Esforco, Nivel> = { low: 'ok', medium: 'neutro', high: 'aviso', xhigh: 'aviso', max: 'critico' }
@@ -75,7 +87,7 @@ export function barraFina(pct: number, largura: number): { cheias: number; vazia
 const num = (n: number) => Number(n.toFixed(2))
 
 /** Anel de contexto, 24×24: trilho decorativo e arco na cor do nível, começando no topo. */
-export function svgAnel(pct: number, nivel: Nivel): string {
+export function svgAnel(pct: number, nivel: Nivel, TRACO: Record<Nivel, string> = PALETAS.default): string {
   const c = 2 * Math.PI * 9
   const p = Math.max(0, Math.min(1, pct / 100))
   return (
@@ -87,7 +99,7 @@ export function svgAnel(pct: number, nivel: Nivel): string {
 }
 
 /** Arco do cache, 20×20: quanto da vida ainda resta. Frio é um anel tracejado. */
-export function svgCache(restanteMin: number, ttlMin: number, nivel: Nivel): string {
+export function svgCache(restanteMin: number, ttlMin: number, nivel: Nivel, TRACO: Record<Nivel, string> = PALETAS.default): string {
   const c = 2 * Math.PI * 8
   const abre = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">`
   if (restanteMin <= 0)
@@ -101,7 +113,7 @@ export function svgCache(restanteMin: number, ttlMin: number, nivel: Nivel): str
 }
 
 /** Medidor de limite, 56×6, cantos redondos. */
-export function svgMedidor(pct: number, nivel: Nivel): string {
+export function svgMedidor(pct: number, nivel: Nivel, TRACO: Record<Nivel, string> = PALETAS.default): string {
   const w = Math.max(0, Math.min(56, (56 * pct) / 100))
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="56" height="6" viewBox="0 0 56 6">` +
