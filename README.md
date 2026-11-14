@@ -106,7 +106,7 @@ Set options with `/plugin configure cadence@kj-mods` or in `/config`.
 
 **Keep the judge offline.** `judge: local`, with [Ollaya](https://github.com/ollaya-dev/ollaya) running (see [Choose your judge](#choose-your-judge)).
 
-**Change the colors.** `theme: ocean`, `sunset`, `mono` or `colorblind`. Percent text keeps following your Claude Code theme.
+**Change the colors.** `theme: tokyonight`, `dracula`, `nord`, `gruvbox`, `catppuccin`, `solarized`, `github`, `oled`, or `ocean`, `sunset`, `mono`, `colorblind`. The classics keep each palette's hues, nudged only as far as needed to stay readable on light and dark. Percent text keeps following your Claude Code theme.
 
 **Just the band.** `autoEffort: off` · `idleMinutes: 0` · `compactWith: session`. Cadence only shows and warns, and Claude Code does the rest.
 
@@ -131,7 +131,7 @@ For Claude Code's own autocompact to match the band, use the same budget in `~/.
 | `minEffort` | `low` | `low` → `max` | Auto never picks below this |
 | `maxEffort` | `max` | `low` → `max` | Auto never picks above this |
 | `bias` | `0` | `-2` → `2` | Cheaper or more thorough. Only moves the calls where the judge was unsure |
-| `theme` | `default` | `default` · `ocean` · `sunset` · `mono` · `colorblind` | Colors of the bars and desktop graphics. All pass 3:1 on light and dark. `colorblind` uses blue and orange |
+| `theme` | `default` | `default` · `ocean` · `sunset` · `mono` · `colorblind` · `tokyonight` · `dracula` · `nord` · `gruvbox` · `catppuccin` · `solarized` · `github` · `oled` | Colors of the bars and desktop graphics. All pass 3:1 on light and dark. `colorblind` uses blue and orange |
 | `compactWith` | `haiku` | `haiku` · `session` | Who writes the compaction summary |
 | `idleMinutes` | `60` | `0` · `15` → `120` | Compact after this long idle. `0` turns it off |
 | `idleMinTokens` | `30000` | `15000` → `100000` | Smaller chats are not compacted when idle |

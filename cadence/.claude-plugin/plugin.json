@@ -111,14 +111,22 @@
     "theme": {
       "type": "string",
       "title": "Band color theme",
-      "description": "Colors of the bars and desktop graphics. default, ocean, sunset, mono (grays) or colorblind (blue and orange). Every theme passes 3:1 contrast on light and dark.",
+      "description": "Colors of the bars and desktop graphics. default, ocean, sunset, mono (grays), colorblind (blue and orange), or a classic: tokyonight, dracula, nord, gruvbox, catppuccin, solarized, github, oled. Every theme passes 3:1 contrast on light and dark.",
       "default": "default",
       "options": [
         "default",
         "ocean",
         "sunset",
         "mono",
-        "colorblind"
+        "colorblind",
+        "tokyonight",
+        "dracula",
+        "nord",
+        "gruvbox",
+        "catppuccin",
+        "solarized",
+        "github",
+        "oled"
       ]
     },
     "compactWith": {
