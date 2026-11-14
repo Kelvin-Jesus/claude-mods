@@ -50,14 +50,14 @@ export const PALETAS: Record<NomeTema, Record<Nivel, string>> = {
   sunset: { ok: '#d2702a', aviso: '#b38400', critico: '#d93f5f', info: '#c4549a', destaque: '#8a63d2', neutro: '#8a8984' },
   mono: { ok: '#8a8984', aviso: '#7f7e78', critico: '#74736d', info: '#8a8984', destaque: '#8a8984', neutro: '#8a8984' },
   colorblind: { ok: '#2a7fc0', aviso: '#b87800', critico: '#d55e00', info: '#1a93b8', destaque: '#9a6bb5', neutro: '#8a8984' },
-  tokyonight: { ok: '#6b9d34', aviso: '#be8127', critico: '#f55674', info: '#5789f5', destaque: '#a376f4', neutro: '#8a8984' },
-  dracula: { ok: '#05a42d', aviso: '#db7100', critico: '#ff4d4d', info: '#039aba', destaque: '#a973f7', neutro: '#8a8984' },
-  nord: { ok: '#759957', aviso: '#b78420', critico: '#bf616a', info: '#6c91b7', destaque: '#ac81a4', neutro: '#8a8984' },
-  gruvbox: { ok: '#92941e', aviso: '#b88204', critico: '#fb4934', info: '#6e9687', destaque: '#cd758d', neutro: '#8a8984' },
-  catppuccin: { ok: '#39a130', aviso: '#b9840e', critico: '#ee5982', info: '#4a8cf7', destaque: '#ad73f2', neutro: '#8a8984' },
-  solarized: { ok: '#819400', aviso: '#b28700', critico: '#dc322f', info: '#268bd2', destaque: '#6c71c4', neutro: '#8a8984' },
-  github: { ok: '#36a045', aviso: '#b8861e', critico: '#f85149', info: '#298dff', destaque: '#ac70ff', neutro: '#8a8984' },
-  oled: { ok: '#00a354', aviso: '#c28200', critico: '#ff1744', info: '#0097db', destaque: '#d500f9', neutro: '#8a8984' },
+  tokyonight: { ok: '#5789f5', aviso: '#be8127', critico: '#f55674', info: '#5789f5', destaque: '#a376f4', neutro: '#8a8984' },
+  dracula: { ok: '#a973f7', aviso: '#db7100', critico: '#ff4d4d', info: '#039aba', destaque: '#a973f7', neutro: '#8a8984' },
+  nord: { ok: '#4598af', aviso: '#b78420', critico: '#bf616a', info: '#6c91b7', destaque: '#ac81a4', neutro: '#8a8984' },
+  gruvbox: { ok: '#e56701', aviso: '#b88204', critico: '#fb4934', info: '#6e9687', destaque: '#cd758d', neutro: '#8a8984' },
+  catppuccin: { ok: '#ad73f2', aviso: '#b9840e', critico: '#ee5982', info: '#4a8cf7', destaque: '#ad73f2', neutro: '#8a8984' },
+  solarized: { ok: '#268bd2', aviso: '#b28700', critico: '#dc322f', info: '#268bd2', destaque: '#6c71c4', neutro: '#8a8984' },
+  github: { ok: '#298dff', aviso: '#b8861e', critico: '#f85149', info: '#298dff', destaque: '#ac70ff', neutro: '#8a8984' },
+  oled: { ok: '#009cad', aviso: '#c28200', critico: '#ff1744', info: '#0097db', destaque: '#d500f9', neutro: '#8a8984' },
 }
 
 /** A forma do glifo também diz o nível, para quem não distingue as cores. */
